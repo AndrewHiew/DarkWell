@@ -2,46 +2,51 @@
 #include "GameEngine.h"
 #include "Room.h"
 #include "Player.h"
-#include "RoomNode.h"
 #include "MovingObstacle.h"
+#include "GameMap.h"
 #include <iostream>
-#include "List.h"  // Include your List template
 
-GameEngine::GameEngine() {}
+GameEngine::GameEngine() : gameMap(new GameMap()) {}  // Initialize GameMap
 
 GameEngine::~GameEngine() { cleanUp(); }
 
 int GameEngine::StartGame() {
-    sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell - Room Transition Test");
+    sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell");
     window.setFramerateLimit(60);
 
-    Player player(100);  // Create a player with 100 HP
-    player.setPosition(50, 280);  // Initial position in Room 1
+    Player player(100);
+    player.setPosition(50, 280);
 
-    // Initialize rooms and their obstacles using the List
-    rooms.pushBack(initializeRoom1());
-    rooms.pushBack(initializeRoom2());
-    rooms.pushBack(initializeRoom3());
-    Room* currentRoom = rooms[0];  // Start in Room 1
-    sf::Clock clock;  // For deltaTime calculations
+    // Initialize rooms and set up their connections within the GameMap
+    Room* room1 = initializeRoom1();
+    Room* room2 = initializeRoom2();
+    Room* room3 = initializeRoom3();
+
+    gameMap->setRootRoom(room1);             // Set Room 1 as the root room
+    gameMap->addRoom(room1, room2, "left"); // Link Room 1 to Room 2 on the right
+    gameMap->addRoom(room1, room3, "up");    // Link Room 1 to Room 3 above
+    gameMap->addRoom(room2, room1, "left");  // Link Room 2 back to Room 1 on the left
+    gameMap->addRoom(room3, room1, "down");  // Link Room 3 back to Room 1 below
+
+    gameMap->setCurrentRoom(room1);          // Start the player in Room 1
+
+    sf::Clock clock;
 
     while (window.isOpen()) {
         handleEvents(window);
+        float deltaTime = clock.restart().asSeconds();
 
-        float deltaTime = clock.restart().asSeconds();  // Calculate deltaTime
-
-        player.handleInput();  // Handle keyboard input
-        player.update(deltaTime, *currentRoom);  // Update player with room collision
-
-        updateObstacles(currentRoom, deltaTime);
+        player.handleInput();
+        player.update(deltaTime, *gameMap->getCurrentRoom());
+        updateObstacles(gameMap->getCurrentRoom(), deltaTime);
 
         // Check for room transitions
-        handleRoomTransitions(player, currentRoom, rooms);  // Pass List of rooms
+        handleRoomTransitions(player);
 
-        window.clear(sf::Color::White);  // Clear the window
-        currentRoom->draw(window);  // Draw the current room and its obstacles
-        player.draw(window);  // Draw the player
-        window.display();  // Display everything
+        window.clear(sf::Color::White);
+        gameMap->getCurrentRoom()->draw(window);
+        player.draw(window);
+        window.display();
     }
 
     return 0;
@@ -49,28 +54,49 @@ int GameEngine::StartGame() {
 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
-    room1->addObstacle(new NormalObstacle(0, 320, 640, 40));  // Floor obstacle
+    room1->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Ceiling obstacle
+    room1->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Ceiling obstacle
+
+    room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
+    room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
+
     room1->addObstacle(new NormalObstacle(300, 250, 100, 20));
     room1->addObstacle(new NormalObstacle(100, 200, 100, 20));
-    room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 100.0f, 150.0f)); // Add moving obstacle
+    room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 170.0f)); // Moving obstacle
     room1->addObstacle(new NormalObstacle(500, 100, 60, 20));
+    //room1->addObstacle(new NormalObstacle(0, 0, 10, 360));
     return room1;
 }
 
 Room* GameEngine::initializeRoom2() {
     Room* room2 = new Room("Room 2");
-    room2->addObstacle(new NormalObstacle(0, 320, 640, 40));
-    room2->addObstacle(new NormalObstacle(200, 200, 80, 20));
-    room2->addObstacle(new NormalObstacle(400, 150, 100, 20));
+    room2->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Ceiling obstacle
+    room2->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Ceiling obstacle
+
+    room2->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
+    room2->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
+
+    room2->addObstacle(new NormalObstacle(300, 250, 100, 20));
+    room2->addObstacle(new NormalObstacle(100, 200, 100, 20));
+    room2->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 170.0f)); // Moving obstacle
+    room2->addObstacle(new NormalObstacle(500, 100, 60, 20));
+    //room2->addObstacle(new NormalObstacle(0, 0, 10, 360));
     return room2;
 }
 
 Room* GameEngine::initializeRoom3() {
     Room* room3 = new Room("Room 3");
-    room3->addObstacle(new NormalObstacle(0, 320, 300, 40));  // Floor obstacle
-    room3->addObstacle(new NormalObstacle(340, 320, 300, 40));  // Floor obstacle
-    room3->addObstacle(new NormalObstacle(300, 200, 80, 20)); // Wall on the left of the gap
-    room3->addObstacle(new NormalObstacle(380, 200, 80, 20)); // Wall on the right of the gap
+    room3->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Ceiling obstacle
+    room3->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Ceiling obstacle
+
+    room3->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
+    room3->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
+
+    room3->addObstacle(new NormalObstacle(300, 250, 100, 20));
+    room3->addObstacle(new NormalObstacle(100, 200, 100, 20));
+    room3->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 170.0f)); // Moving obstacle
+    room3->addObstacle(new NormalObstacle(500, 100, 60, 20));
+    //room3->addObstacle(new NormalObstacle(0, 0, 10, 360));
     return room3;
 }
 
@@ -84,50 +110,42 @@ void GameEngine::handleEvents(sf::RenderWindow& window) {
 }
 
 void GameEngine::updateObstacles(Room* currentRoom, float deltaTime) {
-    const auto& obstacles = currentRoom->getObstacles(); // Get a reference to obstacles
-    std::cout << "Number of obstacles: " << obstacles.size() << std::endl;
+    const auto& obstacles = currentRoom->getObstacles();
 
-    if (obstacles.size() > 3) { // Ensure that there are at least 4 obstacles
-        MovingObstacle* movingObstacle = dynamic_cast<MovingObstacle*>(obstacles[3]); // Assuming it is the fourth obstacle
+    // Iterate over all obstacles to find any MovingObstacle
+    auto it = obstacles.getIteratorFromFront();
+    while (it != it.end()) {
+        Obstacle* obstacle = it.getCurrent()->getValue();
+
+        MovingObstacle* movingObstacle = dynamic_cast<MovingObstacle*>(obstacle);
         if (movingObstacle) {
-            movingObstacle->update(deltaTime);
+            movingObstacle->update(deltaTime);  // Update the moving obstacle
         }
-    }
-    else {
-        std::cerr << "Error: Not enough obstacles in the room. Expected at least 4." << std::endl;
+        ++it;
     }
 }
 
-void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms) {
+void GameEngine::handleRoomTransitions(Player& player) {
     sf::FloatRect playerBounds = player.getBounds();
 
-    // Check transitions to different rooms
-    if (playerBounds.left + playerBounds.width > 640 && currentRoom == rooms[0]) {  // Room 1 to Room 2
-        player.setPosition(0, player.getPosition().y);  // Place player at the left edge of Room 2
-        currentRoom = rooms[1];  // Transition to Room 2
+    if (playerBounds.left + playerBounds.width > 640) {  // Right transition
+        gameMap->handleRoomTransition("right");
+        player.setPosition(0, player.getPosition().y);
     }
-    else if (playerBounds.left < 0 && currentRoom == rooms[1]) {  // Room 2 to Room 1
-        player.setPosition(640 - playerBounds.width, player.getPosition().y);  // Place player at right edge of Room 1
-        currentRoom = rooms[0];  // Transition to Room 1
+    else if (playerBounds.left < 0) {  // Left transition
+        gameMap->handleRoomTransition("left");
+        player.setPosition(640 - playerBounds.width, player.getPosition().y);
     }
-    else if (playerBounds.top < 0 && currentRoom == rooms[0]) {  // Room 1 to Room 3
-        player.setPosition(player.getPosition().x, 280);  // Reset position for Room 3
-        currentRoom = rooms[2];  // Transition to Room 3
+    else if (playerBounds.top < 0) {  // Upward transition
+        gameMap->handleRoomTransition("up");
+        player.setPosition(player.getPosition().x, 280);
     }
-    else if (playerBounds.top + playerBounds.height > 360 && currentRoom == rooms[2]) {  // Room 3 to Room 1
-        player.setPosition(player.getPosition().x, 0);  // Reset position for Room 1
-        currentRoom = rooms[0];  // Transition to Room 1
+    else if (playerBounds.top + playerBounds.height > 360) {  // Downward transition
+        gameMap->handleRoomTransition("down");
+        player.setPosition(player.getPosition().x, 0);
     }
 }
 
 void GameEngine::cleanUp() {
-    // Use 'typename' to indicate that 'Iterator' is a type
-    typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
-    while (it != it.end()) {
-        Room* room = it.getCurrent()->getValue();
-        ++it;
-        std::cout << "Deleting: " << room->getName() << std::endl;
-        delete room;  // Delete each room
-    }
+    delete gameMap;  // Deallocate map and rooms
 }
-

@@ -130,7 +130,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="MovingObstacle.cpp" />
     <ClCompile Include="NormalObstacle.cpp" />
     <ClCompile Include="Obstacle.cpp" />
@@ -145,14 +145,15 @@
     <ClInclude Include="MovingObstacle.h" />
     <ClInclude Include="NodeIterator.h" />
     <ClInclude Include="List.h" />
-    <ClInclude Include="Map.h" />
+    <ClInclude Include="GameMap.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="NormalObstacle.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />
-    <ClInclude Include="RoomNode.h" />
-    <ClInclude Include="RoomNodeList.h" />
+    <ClInclude Include="Tree.h" />
+    <ClInclude Include="TreeIterator.h" />
+    <ClInclude Include="TreeNode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

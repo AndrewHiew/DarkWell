@@ -1,10 +1,14 @@
 #include "Player.h"
 
 Player::Player(int maxHP)
-    : Character(maxHP), speed(200.0f), jumpHeight(500.0f), gravity(400.0f), isJumping(false), velocityY(0.0f) {
+    : Character(maxHP), speed(200.0f), jumpHeight(300.0f), gravity(400.0f), isJumping(false), velocityY(0.0f) {
     playerShape.setSize(sf::Vector2f(24, 32));  // Player is 24x32 pixels
     playerShape.setFillColor(sf::Color::Blue);  // Blue color for now
     playerShape.setPosition(100, 300);  // Initial position
+}
+
+Player::~Player() {
+    // Delete Stuff
 }
 
 // Method to Return the current position of the player

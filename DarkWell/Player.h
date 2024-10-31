@@ -14,6 +14,7 @@ private:
 
 public:
     Player(int maxHP);
+    ~Player();
 
     void handleInput();
     void update(float deltaTime, Room& room);  // Update with room collision handling
