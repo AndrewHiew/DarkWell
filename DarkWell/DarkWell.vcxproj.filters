@@ -36,6 +36,12 @@
     <ClCompile Include="Obstacle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NormalObstacle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MovingObstacle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DoublyLinkedNode.h">
@@ -75,6 +81,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RoomNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalObstacle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingObstacle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

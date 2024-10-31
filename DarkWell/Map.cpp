@@ -15,9 +15,9 @@ Map::Map() {
 
 Map::~Map() {
     // Clean up all rooms and room nodes
-    delete rootRoom->left->room;  // Delete the room in the left RoomNode
-    delete rootRoom->right->room; // Delete the room in the right RoomNode
-    delete rootRoom->left;         // Delete the left RoomNode
-    delete rootRoom->right;        // Delete the right RoomNode
-    delete rootRoom;               // Finally, delete the root RoomNode
+    delete rootRoom->left->room; 
+    delete rootRoom->right->room;
+    delete rootRoom->left;
+    delete rootRoom->right;
+    delete rootRoom;
 }

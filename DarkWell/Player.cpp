@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(int maxHP)
-    : Character(maxHP), speed(100.0f), jumpHeight(250.0f), gravity(300.0f), isJumping(false), velocityY(0.0f) {
+    : Character(maxHP), speed(200.0f), jumpHeight(500.0f), gravity(400.0f), isJumping(false), velocityY(0.0f) {
     playerShape.setSize(sf::Vector2f(24, 32));  // Player is 24x32 pixels
     playerShape.setFillColor(sf::Color::Blue);  // Blue color for now
     playerShape.setPosition(100, 300);  // Initial position
@@ -41,8 +41,8 @@ void Player::update(float deltaTime, Room& room) {
     // Iterate over the room's obstacles to detect collisions
     auto it = room.getObstacles().getIteratorFromFront();
     while (it != it.end()) {
-        const Obstacle& obstacle = it.getCurrent()->getValue();
-        sf::FloatRect obstacleBounds = obstacle.getBounds();
+        Obstacle* obstacle = it.getCurrent()->getValue();  // Get the pointer to Obstacle
+        sf::FloatRect obstacleBounds = obstacle->getBounds();  // Use arrow operator
 
         if (playerBounds.intersects(obstacleBounds)) {
             // Calculate the offsets

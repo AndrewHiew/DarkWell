@@ -2,6 +2,7 @@
 
 #include "DoublyLinkedNode.h"
 #include "DoublyLinkedNodeIterator.h"
+#include <stdexcept>
 
 template<class T>
 class List {
@@ -41,6 +42,7 @@ public:
 
     // Pop from the back of the list
     const T popBack() {
+        if (isEmpty()) throw std::out_of_range("List is empty");
 
         T savedValue = last->getValue();
         Node* toDelete = last;
@@ -70,6 +72,8 @@ public:
 
     // Pop from the front of the list
     const T popFront() {
+        if (isEmpty()) throw std::out_of_range("List is empty");
+
         T savedValue = first->getValue();
         Node* toDelete = first;
         first = first->getNext();
@@ -81,6 +85,32 @@ public:
         toDelete->remove();
         --count;
         return savedValue;
+    }
+
+    // Access elements by index (non-const version)
+    T& operator[](int index) {
+        if (index < 0 || index >= count) {
+            throw std::out_of_range("Index out of range");
+        }
+
+        Node* current = first;  // Start at the head of the list
+        for (int i = 0; i < index; ++i) {
+            current = current->getNext();  // Traverse to the node at the index
+        }
+        return current->getValue();  // Return the reference to the value at the given index
+    }
+
+    // Access elements by index (const version)
+    const T& operator[](int index) const {
+        if (index < 0 || index >= count) {
+            throw std::out_of_range("Index out of range");
+        }
+
+        Node* current = first;  // Start at the head of the list
+        for (int i = 0; i < index; ++i) {
+            current = current->getNext();  // Traverse to the node at the index
+        }
+        return current->getValue();  // Return the reference to the value at the given index
     }
 
     // Helper Functions
