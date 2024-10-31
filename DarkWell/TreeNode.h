@@ -9,18 +9,19 @@ class TreeNode {
 private:
     T value;                                   // The value stored in the node
     List<TreeNode<T>*> children;               // List to hold pointers to children
-    TreeNode<T>* parent;                       // Pointer to the parent node
-    static const int MAX_CHILDREN = 4;
+    TreeNode<T>* parent;                       // Pointer to the parent 
+    
 
 public:
     // Static NIL object for TreeNode reference
     static TreeNode<T> NIL;
+    static const int MAX_CHILDREN = 4;
 
     // Default constructor
-    TreeNode() : value(T()), parent(nullptr) {}
+    TreeNode() : value(T()), parent(&NIL) {}
 
     // Constructor with value and parent
-    TreeNode(const T& value, TreeNode<T>* parentNode = nullptr) 
+    TreeNode(const T& value, TreeNode<T>* parentNode = &NIL)
         : value(value), parent(parentNode) {}
 
     // TreeNode Destructor
@@ -34,6 +35,29 @@ public:
             }
         }
     }
+
+    TreeNode<T>* findRoomNodeRecursive(TreeNode<T>* node, Room* room) {
+        if (!node || node == &TreeNode<T*>::NIL) {
+            return nullptr; // Base case: node is null or NIL
+        }
+
+        // Check if the current node's value matches the room we're looking for
+        if (node->getValue() == room) {
+            return node; // Found the node
+        }
+
+        // Recursively search through children
+        const auto& children = node->getChildren();
+        for (TreeNode<T>* child : children) {
+            TreeNode<T>* foundNode = findRoomNodeRecursive(child, room);
+            if (foundNode) {
+                return foundNode; // Found the room in one of the children
+            }
+        }
+
+        return nullptr; // Room not found in this branch
+    }
+
 
     // Get the value of the node
     T getValue() const {
@@ -58,6 +82,14 @@ public:
     // Get the children of the node
     const List<TreeNode<T>*>& getChildren() const {
         return children;
+    }
+
+    // Access child by index
+    TreeNode<T>* operator[](size_t index) {
+        if (index >= children.size()) {
+            throw std::out_of_range("Index out of bounds for TreeNode children.");
+        }
+        return children[index]; // Return the child at the given index
     }
 };
 

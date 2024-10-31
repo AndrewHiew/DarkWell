@@ -20,4 +20,6 @@ public:
     void addObstacle(Room* room, Obstacle* obstacle); // Add obstacle to room
     int directionIndex(const std::string& direction) const; // Get direction index
     void findParentNode(TreeNode<Room*>* node, Room* parent, TreeNode<Room*>*& foundNode);
+
+    TreeNode<Room*>* findRoomNode(Room* room);
 };

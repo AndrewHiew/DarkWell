@@ -22,13 +22,13 @@ int GameEngine::StartGame() {
     Room* room2 = initializeRoom2();
     Room* room3 = initializeRoom3();
 
-    gameMap->setRootRoom(room1);             // Set Room 1 as the root room
-    gameMap->addRoom(room1, room2, "left"); // Link Room 1 to Room 2 on the right
-    gameMap->addRoom(room1, room3, "up");    // Link Room 1 to Room 3 above
-    gameMap->addRoom(room2, room1, "left");  // Link Room 2 back to Room 1 on the left
-    gameMap->addRoom(room3, room1, "down");  // Link Room 3 back to Room 1 below
+    gameMap->setRootRoom(room1);                // Set Room 1 as the root room
+    gameMap->addRoom(room1, room2, "right");    // Link Room 1 to Room 2 on the right
+    gameMap->addRoom(room1, room3, "up");       // Link Room 1 to Room 3 above
+    gameMap->addRoom(room2, room1, "left");     // Link Room 2 back to Room 1 on the left
+    gameMap->addRoom(room3, room1, "down");     // Link Room 3 back to Room 1 below
 
-    gameMap->setCurrentRoom(room1);          // Start the player in Room 1
+    gameMap->setCurrentRoom(room1);              // Start the player in Room 1
 
     sf::Clock clock;
 
@@ -51,6 +51,7 @@ int GameEngine::StartGame() {
 
     return 0;
 }
+
 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
