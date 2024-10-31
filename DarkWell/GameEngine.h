@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Room.h"
 #include "Obstacle.h"
+#include "Map.h"
 
 class GameEngine {
 public:

@@ -4,7 +4,7 @@
 
 class Map {
 public:
-    RoomNode* rootRoom;
+    RoomNode* rootRoom; // Change to RoomNode to hold room connections
 
     Map();
     ~Map();

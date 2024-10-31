@@ -7,6 +7,16 @@ Player::Player(int maxHP)
     playerShape.setPosition(100, 300);  // Initial position
 }
 
+// Method to Return the current position of the player
+sf::Vector2f Player::getPosition() const {
+    return playerShape.getPosition();  
+}
+
+// Method to set the current position of the player
+void Player::setPosition(float x, float y) {
+    playerShape.setPosition(x, y);
+}
+
 void Player::handleInput() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         playerShape.move(-speed * 0.016f, 0);  // Move left

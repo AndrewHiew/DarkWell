@@ -1,7 +1,7 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include "Obstacle.h"
-#include "List.h"  // Your doubly linked list template
+#include "List.h"
+#include <SFML/Graphics.hpp>
 
 class Room {
 private:

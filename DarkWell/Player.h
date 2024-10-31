@@ -20,4 +20,6 @@ public:
     void draw(sf::RenderWindow& window);
 
     sf::FloatRect getBounds() const;  // Bounding box for collision
+    void setPosition(float x, float y);  // Method to set position
+    sf::Vector2f getPosition() const;
 };
