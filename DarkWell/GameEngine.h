@@ -1,26 +1,24 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+
 #include "Player.h"
 #include "Room.h"
-#include "MovingObstacle.h"
-#include "GameMap.h"  // Include updated header for GameMap
+#include "Obstacle.h"
 
 class GameEngine {
-private:
-    GameMap* gameMap;  // Updated to GameMap pointer for the room structure
-
 public:
     GameEngine();
     ~GameEngine();
-
     int StartGame();
+    List<Room*> rooms;
 
-    Room* initializeRoom1();
-    Room* initializeRoom2();
-    Room* initializeRoom3();
-
-    void handleEvents(sf::RenderWindow& window);
-    void updateObstacles(Room* currentRoom, float deltaTime);
-    void handleRoomTransitions(Player& player);
-    void cleanUp();
+private:
+    void drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape);
+    Room* initializeRoom1();  // Method to initialize Room 1
+    Room* initializeRoom2();  // Method to initialize Room 2
+    Room* initializeRoom3();  // Method to initialize Room 3
+    Room* initializeRoom4();  // Method to initialize Room 4
+    void handleEvents(sf::RenderWindow& window);  // Method to handle window events
+    void updateObstacles(Room* currentRoom, float deltaTime);  // Method to update obstacles
+    void handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms);  // Method for room transitions
+    void cleanUp();  // Method to clean up rooms
 };

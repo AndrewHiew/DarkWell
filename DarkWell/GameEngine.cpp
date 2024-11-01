@@ -3,10 +3,12 @@
 #include "Room.h"
 #include "Player.h"
 #include "MovingObstacle.h"
-#include "GameMap.h"
 #include <iostream>
+#include "List.h"
+#include "LazerGun.h"
+#include "Shovel.h"
 
-GameEngine::GameEngine() : gameMap(new GameMap()) {}  // Initialize GameMap
+GameEngine::GameEngine() {}
 
 GameEngine::~GameEngine() { cleanUp(); }
 
@@ -14,92 +16,125 @@ int GameEngine::StartGame() {
     sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell");
     window.setFramerateLimit(60);
 
-    Player player(100);
-    player.setPosition(50, 280);
+    Player player(100);  // Create a player with 100 HP
+    player.setPosition(50, 280);  // Initial position in Room 1
 
-    // Initialize rooms and set up their connections within the GameMap
-    Room* room1 = initializeRoom1();
-    Room* room2 = initializeRoom2();
-    Room* room3 = initializeRoom3();
+    // Add items to player's inventory
+    player.addItemToInventory(new LazerGun());
+    player.addItemToInventory(new Shovel());
 
-    gameMap->setRootRoom(room1);                // Set Room 1 as the root room
-    gameMap->addRoom(room1, room2, "right");    // Link Room 1 to Room 2 on the right
-    gameMap->addRoom(room1, room3, "up");       // Link Room 1 to Room 3 above
-    gameMap->addRoom(room2, room1, "left");     // Link Room 2 back to Room 1 on the left
-    gameMap->addRoom(room3, room1, "down");     // Link Room 3 back to Room 1 below
+    // Initialize rooms and their obstacles
+    rooms.pushBack(initializeRoom1());
+    rooms.pushBack(initializeRoom2());
+    rooms.pushBack(initializeRoom3());
+    rooms.pushBack(initializeRoom4());
+    Room* currentRoom = rooms[0];  // Start in Room 1
 
-    gameMap->setCurrentRoom(room1);              // Start the player in Room 1
+    sf::Clock clock;  // For deltaTime calculations
 
-    sf::Clock clock;
-
+    // Main game loop
     while (window.isOpen()) {
-        handleEvents(window);
-        float deltaTime = clock.restart().asSeconds();
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
 
-        player.handleInput();
-        player.update(deltaTime, *gameMap->getCurrentRoom());
-        updateObstacles(gameMap->getCurrentRoom(), deltaTime);
+        float deltaTime = clock.restart().asSeconds(); // Assuming you have a clock to measure time
 
-        // Check for room transitions
-        handleRoomTransitions(player);
+        player.handleInput();  // Handle player input
 
         window.clear(sf::Color::White);
-        gameMap->getCurrentRoom()->draw(window);
-        player.draw(window);
-        window.display();
-    }
 
+        currentRoom->draw(window);  // Draw current room (or any other background)
+        player.draw(window);  // Draw the player
+
+        player.drawInventoryOverlay(window);  // Draw inventory overlay
+
+        // Update logic
+        player.update(deltaTime, *currentRoom); // Update player
+        if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
+            lazerGun->updateProjectiles(deltaTime); // Update projectiles
+        }
+
+        // In your draw function:
+        if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
+            lazerGun->drawProjectiles(window); // Draw projectiles for the LazerGun
+        }
+
+        window.display();  // Display what has been drawn
+    }
     return 0;
 }
 
+void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape) {
+    // Draw the Lazer Gun shape
+    window.draw(lazerGunShape);
+
+    // Draw the Shovel shape
+    window.draw(shovelShape);
+
+    // Highlight the selected item
+    sf::RectangleShape* selectedShape = (player.getSelectedItemIndex() == 0) ? &lazerGunShape : &shovelShape;
+    selectedShape->setOutlineThickness(3);
+    selectedShape->setOutlineColor(sf::Color::Yellow);  // Highlight color for selected item
+
+    // Draw again to show the highlight
+    window.draw(*selectedShape);
+
+    // Remove highlight for next frame
+    selectedShape->setOutlineThickness(0);
+}
 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
-    room1->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Ceiling obstacle
-    room1->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Ceiling obstacle
-
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
 
+    room1->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Celling obstacle
+    room1->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Celling obstacle
+
+    room1->addObstacle(new NormalObstacle(0, 0, 10, 360));  // Left Wall
+    room1->addObstacle(new NormalObstacle(630, 0, 10, 300));  // Right Wall
+
     room1->addObstacle(new NormalObstacle(300, 250, 100, 20));
     room1->addObstacle(new NormalObstacle(100, 200, 100, 20));
-    room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 170.0f)); // Moving obstacle
     room1->addObstacle(new NormalObstacle(500, 100, 60, 20));
-    //room1->addObstacle(new NormalObstacle(0, 0, 10, 360));
+
+    room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
+    room1->addObstacle(new MovingObstacle(0, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     return room1;
 }
 
 Room* GameEngine::initializeRoom2() {
     Room* room2 = new Room("Room 2");
-    room2->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Ceiling obstacle
-    room2->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Ceiling obstacle
-
     room2->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room2->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
 
-    room2->addObstacle(new NormalObstacle(300, 250, 100, 20));
-    room2->addObstacle(new NormalObstacle(100, 200, 100, 20));
-    room2->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 170.0f)); // Moving obstacle
-    room2->addObstacle(new NormalObstacle(500, 100, 60, 20));
-    //room2->addObstacle(new NormalObstacle(0, 0, 10, 360));
+    room2->addObstacle(new NormalObstacle(200, 200, 80, 20));
+    room2->addObstacle(new NormalObstacle(400, 150, 100, 20));
     return room2;
 }
 
 Room* GameEngine::initializeRoom3() {
     Room* room3 = new Room("Room 3");
-    room3->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Ceiling obstacle
-    room3->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Ceiling obstacle
-
     room3->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room3->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
-
-    room3->addObstacle(new NormalObstacle(300, 250, 100, 20));
-    room3->addObstacle(new NormalObstacle(100, 200, 100, 20));
-    room3->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 170.0f)); // Moving obstacle
-    room3->addObstacle(new NormalObstacle(500, 100, 60, 20));
-    //room3->addObstacle(new NormalObstacle(0, 0, 10, 360));
+    room3->addObstacle(new NormalObstacle(300, 200, 80, 20)); // Wall on the left of the gap
+    room3->addObstacle(new NormalObstacle(380, 200, 80, 20)); // Wall on the right of the gap
     return room3;
 }
+
+Room* GameEngine::initializeRoom4() {
+    Room* room4 = new Room("Room 4");
+    room4->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
+    room4->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
+
+    room4->addObstacle(new NormalObstacle(200, 200, 80, 20));
+    room4->addObstacle(new NormalObstacle(400, 150, 100, 20));
+    return room4;
+}
+
 
 void GameEngine::handleEvents(sf::RenderWindow& window) {
     sf::Event event;
@@ -111,42 +146,58 @@ void GameEngine::handleEvents(sf::RenderWindow& window) {
 }
 
 void GameEngine::updateObstacles(Room* currentRoom, float deltaTime) {
-    const auto& obstacles = currentRoom->getObstacles();
-
-    // Iterate over all obstacles to find any MovingObstacle
-    auto it = obstacles.getIteratorFromFront();
+    // Use List's custom iterator to iterate over all obstacles
+    typename List<Obstacle*>::Iterator it = currentRoom->getObstacles().getIteratorFromFront();
     while (it != it.end()) {
         Obstacle* obstacle = it.getCurrent()->getValue();
-
         MovingObstacle* movingObstacle = dynamic_cast<MovingObstacle*>(obstacle);
         if (movingObstacle) {
-            movingObstacle->update(deltaTime);  // Update the moving obstacle
+            movingObstacle->update(deltaTime);  // Update moving obstacle
         }
-        ++it;
+        ++it;  // Move to the next obstacle
     }
 }
 
-void GameEngine::handleRoomTransitions(Player& player) {
+
+void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms) {
     sf::FloatRect playerBounds = player.getBounds();
 
-    if (playerBounds.left + playerBounds.width > 640) {  // Right transition
-        gameMap->handleRoomTransition("right");
-        player.setPosition(0, player.getPosition().y);
+    // Check transitions to different rooms
+    if (playerBounds.left + playerBounds.width > 640 && currentRoom == rooms[0]) {  // Room 1 to Room 2
+        player.setPosition(0, player.getPosition().y);  // Place player at the left edge of Room 2
+        currentRoom = rooms[1];  // Transition to Room 2
     }
-    else if (playerBounds.left < 0) {  // Left transition
-        gameMap->handleRoomTransition("left");
-        player.setPosition(640 - playerBounds.width, player.getPosition().y);
+    else if (playerBounds.left < 0 && currentRoom == rooms[1]) {  // Room 2 to Room 1
+        player.setPosition(640 - playerBounds.width, player.getPosition().y);  // Place player at right edge of Room 1
+        currentRoom = rooms[0];  // Transition to Room 1
     }
-    else if (playerBounds.top < 0) {  // Upward transition
-        gameMap->handleRoomTransition("up");
-        player.setPosition(player.getPosition().x, 280);
+    else if (playerBounds.top < 0 && currentRoom == rooms[0]) {  // Room 1 to Room 3
+        player.setPosition(player.getPosition().x, 280);  // Reset position for Room 3
+        currentRoom = rooms[2];  // Transition to Room 3
     }
-    else if (playerBounds.top + playerBounds.height > 360) {  // Downward transition
-        gameMap->handleRoomTransition("down");
-        player.setPosition(player.getPosition().x, 0);
+    else if (playerBounds.top + playerBounds.height > 360 && currentRoom == rooms[2]) {  // Room 3 to Room 1
+        player.setPosition(player.getPosition().x, 0);  // Reset position for Room 1
+        currentRoom = rooms[0];  // Transition to Room 1
+    }
+    else if (playerBounds.left + playerBounds.width > 640 && currentRoom == rooms[1]) {  // Room 2 to Room 4
+        player.setPosition(0, player.getPosition().y);  // Place player at the left edge of Room 4
+        currentRoom = rooms[3];  // Transition to Room 4
+    }
+    else if (playerBounds.left < 0 && currentRoom == rooms[3]) {  // Room 4 to Room 2
+        player.setPosition(640 - playerBounds.width, player.getPosition().y);  // Place player at right edge of Room 2
+        currentRoom = rooms[1];  // Transition to Room 2
     }
 }
 
+
 void GameEngine::cleanUp() {
-    delete gameMap;  // Deallocate map and rooms
+    // Use 'typename' to indicate that 'Iterator' is a type
+    typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
+    while (it != it.end()) {
+        Room* room = it.getCurrent()->getValue();
+        ++it;
+        std::cout << "Deleting: " << room->getName() << std::endl;
+        delete room;  // Delete each room
+    }
 }
+

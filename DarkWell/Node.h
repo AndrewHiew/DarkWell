@@ -1,11 +1,11 @@
 #pragma once
-#include "Room.h"
-#include "RoomNode.h"
 
-class Map {
+// Singly linked list Node template
+template <typename T>
+class Node {
 public:
-    RoomNode* rootRoom; // Change to RoomNode to hold room connections
+    T value;
+    Node* next;
 
-    Map();
-    ~Map();
+    Node(T val) : value(val), next((Node*)0) {}
 };

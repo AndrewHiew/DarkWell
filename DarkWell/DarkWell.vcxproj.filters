@@ -13,15 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Items">
+      <UniqueIdentifier>{fe9b29a4-beb2-41a7-9115-55dde00670b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SingleList">
+      <UniqueIdentifier>{7cb75db1-a7aa-46e1-b036-59e2866fd11d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DoubleList">
+      <UniqueIdentifier>{647d064e-95a6-4bd6-9cc3-9e8781f5382d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Room">
+      <UniqueIdentifier>{61a2a345-abcd-4f8b-80ab-d0489070575e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Obstacle">
+      <UniqueIdentifier>{16dc2726-48b0-4f8c-b8d4-b331510e2404}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Character">
+      <UniqueIdentifier>{3879cb20-1be9-4598-afcd-9287c144daf1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Room.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
@@ -44,53 +59,62 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DoublyLinkedNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DoublyLinkedNodeIterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="List.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Room.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Obstacle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NodeIterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalObstacle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MovingObstacle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeIterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tree.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="LazerGun.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Shovel.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files\SingleList</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeIterator.h">
+      <Filter>Header Files\SingleList</Filter>
+    </ClInclude>
+    <ClInclude Include="DoublyLinkedNodeIterator.h">
+      <Filter>Header Files\DoubleList</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>Header Files\DoubleList</Filter>
+    </ClInclude>
+    <ClInclude Include="DoublyLinkedNode.h">
+      <Filter>Header Files\DoubleList</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Header Files\Room</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingObstacle.h">
+      <Filter>Header Files\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalObstacle.h">
+      <Filter>Header Files\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Obstacle.h">
+      <Filter>Header Files\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="SinglyLinkedList.h">
+      <Filter>Header Files\SingleList</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Header Files\Items</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

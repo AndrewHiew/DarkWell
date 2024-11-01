@@ -1,63 +1,92 @@
 #pragma once
-#include "TreeNode.h"
+#include <stdexcept>
 
-template <typename T>
-class Tree {
+template<class T, int N>
+class NTree
+{
 private:
-    TreeNode<T>* root;
+	const T* fKey;
+	NTree<T, N>* fNodes[N];
+
+	NTree() : fKey((T*)0)
+	{
+		for (int i = 0; i < N; i++) {
+			fNodes[i] = &NIL;
+		}
+	}
 
 public:
-    // Static NIL object for Tree reference
-    static TreeNode<T> NIL;
+	static NTree<T, N> NIL;
+	NTree(const T& aKey) : fKey(&aKey)
+	{
+		for (int i = 0; i < N; i++) {
+			fNodes[i] = &NIL;
+		}
+	}
+	~NTree()
+	{
+		for (int i = 0; i < N; i++) {
+			if (fNodes[i] != &NIL) {
+				delete fNodes[i];
+			}
+		}
+	}
 
-    Tree() : root(nullptr) {}
+	bool isEmpty() const
+	{
+		return this == &NIL;
+	}
 
-    void setRoot(TreeNode<T>* newRoot) {
-        root = newRoot;
-    }
+	const T& getKey() const
+	{
+		if (isEmpty()) {
+			throw std::domain_error("Empty NTree");
+		}
+		return *fKey;
+	}
 
-    TreeNode<T>* getRoot() const {
-        return root;
-    }
+	void attachNTree(int aIndex, NTree<T, N>* aNTree)
+	{
+		if (isEmpty()) {
+			throw std::domain_error("Empty NTree");
+		}
+		if ((aIndex >= 0) && (aIndex < N)) {
+			if (fNodes[aIndex] != &NIL) {
+				throw std::domain_error("Non-empty subtree present");
+			}
+			fNodes[aIndex] = aNTree;
+		}
+	}
 
-    // Declaration of findRoomNode
-    TreeNode<T>* findRoomNode(T room);
+	NTree<T, N>& operator[](int aIndex) const
+	{
+		if (isEmpty()) {
+			throw std::domain_error("Empty NTree");
+		}
+		if ((aIndex >= 0) && (aIndex < N)) {
+			return *fNodes[aIndex];
+		}
+		else {
+			throw std::out_of_range("Illegal subtree index");
+		}
+	}
 
-private:
-    // Recursive function to find the room node
-    TreeNode<T>* findRoomNodeRecursive(TreeNode<T>* node, T room);
+	NTree<T, N>* detachNTree(int aIndex)
+	{
+		if (isEmpty()) {
+			throw std::domain_error("Empty NTree!");
+		}
+
+		if ((aIndex >= 0) && (aIndex < N)) {
+			NTree<T, N>* Result = fNodes[aIndex];
+			fNodes[aIndex] = &NIL;
+			return Result;
+		}
+		else {
+			throw std::out_of_range("Illegal subtree index");
+		}
+	}
 };
 
-// Implementation of findRoomNode in the Tree class
-template <typename T>
-TreeNode<T>* Tree<T>::findRoomNode(T room) {
-    return findRoomNodeRecursive(root, room);
-}
-
-// Recursive function to find the room node
-template <typename T>
-TreeNode<T>* Tree<T>::findRoomNodeRecursive(TreeNode<T>* node, T room) { // Fixed to be a member function
-    if (!node || node == &Tree::NIL) { // Use Tree::NIL correctly
-        return nullptr; // Base case: node is null or NIL
-    }
-
-    // Check if the current node's value matches the room we're looking for
-    if (node->getValue() == room) {
-        return node; // Found the node
-    }
-
-    // Recursively search through children
-    const auto& children = node->getChildren();
-    for (TreeNode<T>* child : children) {
-        TreeNode<T>* foundNode = findRoomNodeRecursive(child, room);
-        if (foundNode) {
-            return foundNode; // Found the room in one of the children
-        }
-    }
-
-    return nullptr; // Room not found in this branch
-}
-
-// Initialize the static NIL node for Tree
-template <typename T>
-TreeNode<T> Tree<T>::NIL;
+template<class T, int N>
+NTree<T, N> NTree<T, N>::NIL;

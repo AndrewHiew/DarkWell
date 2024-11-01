@@ -1,0 +1,67 @@
+#pragma once
+#include "Node.h"
+#include <stdexcept>
+
+template <typename T>
+class SinglyLinkedList {
+private:
+    Node<T>* head;
+    int size;
+
+public:
+    SinglyLinkedList() : head(nullptr), size(0) {}
+    ~SinglyLinkedList() {
+        clear();  // Clean up memory
+    }
+
+    void pushBack(T value) {
+        Node<T>* newNode = new Node<T>(value);
+        if (!head) {
+            head = newNode;
+        }
+        else {
+            Node<T>* current = head;
+            while (current->next) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+        size++;
+    }
+
+    void popFront() {
+        if (!head) throw std::out_of_range("List is empty");
+        Node<T>* temp = head;
+        head = head->next;
+        delete temp;
+        size--;
+    }
+
+    // Add the operator[] to access elements
+    T& operator[](int index) {
+        if (index < 0 || index >= size) throw std::out_of_range("Invalid index");
+        Node<T>* current = head;
+        for (int i = 0; i < index; ++i) {
+            current = current->next;
+        }
+        return current->value;
+    }
+
+    int getSize() const {
+        return size;
+    }
+
+    bool isEmpty() const {
+        return size == 0;
+    }
+
+    void clear() {
+        while (!isEmpty()) {
+            popFront();
+        }
+    }
+
+    Node<T>* getHead() const {
+        return head;
+    }
+};
