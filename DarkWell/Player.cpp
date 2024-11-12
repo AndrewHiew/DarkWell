@@ -1,4 +1,8 @@
 #include "Player.h"
+#include <iostream>
+#include <sstream>
+
+using namespace std;
 
 // Constructor: initializes player attributes
 Player::Player(int maxHP)
@@ -6,7 +10,9 @@ Player::Player(int maxHP)
     playerShape.setSize(sf::Vector2f(24, 32));  // Player is 24x32 pixels
     playerShape.setFillColor(sf::Color::Blue);  // Blue color for now
     playerShape.setPosition(100, 300);  // Initial position
-    selectedItemIndex = 0;
+    selectedItemIndex = 0; // Initial Item
+    facingAngle = 0.0f; // Initial Angle
+    isGrounded = true;
 }
 
 Player::~Player() {
@@ -33,7 +39,7 @@ void Player::handleInput() {
         playerShape.move(speed * 0.016f, 0);  // Move right
         facingAngle = 0.0f;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !isJumping) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !isJumping && isGrounded) {
         velocityY = -jumpHeight;  // Start a jump
         isJumping = true;
     }
@@ -57,40 +63,63 @@ void Player::handleInput() {
     }
 }
 
+std::string Player::vectorToString(const sf::Vector2f& position) {
+    std::ostringstream oss;
+    oss << "(" << position.x << ", " << position.y << ")";
+    return oss.str();
+}
 
 // Update method to handle gravity, movement, and collision detection
 void Player::update(float deltaTime, Room& room) {
-    // Apply gravity
-    velocityY += gravity * deltaTime;
+    // Apply gravity only if the player is not grounded
+    if (!isGrounded) {
+        velocityY += gravity * deltaTime;  // Apply gravity
+    }
+
+    // Move the player based on vertical velocity (gravity)
     playerShape.move(0, velocityY * deltaTime);
 
     // Check for collisions with room obstacles
     sf::FloatRect playerBounds = getBounds();
 
+    // Reset grounded status before checking new collisions
+    isGrounded = false;
+
     // Iterate over the room's obstacles to detect collisions
     auto it = room.getObstacles().getIteratorFromFront();
     while (it != it.end()) {
-        Obstacle* obstacle = it.getCurrent()->getValue();  // Get the pointer to Obstacle
+        Obstacle* obstacle = it.getCurrent()->getValue();  // Get pointer to Obstacle
         sf::FloatRect obstacleBounds = obstacle->getBounds();
 
+        // Check collision with KillObstacle (downwards or upwards)
+        if (KillObstacle* killObstacle = dynamic_cast<KillObstacle*>(obstacle)) {
+            if (playerBounds.intersects(obstacleBounds)) {
+                // Handle collision with KillObstacle (red color)
+                std::cout << "Player collided with KillObstacle!" << std::endl;
+                break;  // Player collided with a kill obstacle
+            }
+        }
+
+        // Collision resolution for other obstacles
         if (playerBounds.intersects(obstacleBounds)) {
-            // Calculate the offsets for collision
+            // Calculate the offsets for collision resolution
             float overlapTop = playerBounds.top + playerBounds.height - obstacleBounds.top;
             float overlapBottom = obstacleBounds.top + obstacleBounds.height - playerBounds.top;
             float overlapLeft = playerBounds.left + playerBounds.width - obstacleBounds.left;
             float overlapRight = obstacleBounds.left + obstacleBounds.width - playerBounds.left;
 
-            // Determine the smallest overlap for collision resolution
+            // Resolve the smallest overlap to prevent sticking
             if (overlapTop < overlapBottom && overlapTop < overlapLeft && overlapTop < overlapRight) {
                 // Collision from the top
                 playerShape.setPosition(playerShape.getPosition().x, obstacleBounds.top - playerBounds.height);
                 velocityY = 0;  // Reset vertical velocity
-                isJumping = false;  // Player is now on the ground
+                isJumping = false;  // Player is on the ground
+                isGrounded = true;  // Player is grounded
             }
             else if (overlapBottom < overlapTop && overlapBottom < overlapLeft && overlapBottom < overlapRight) {
                 // Collision from the bottom
                 playerShape.setPosition(playerShape.getPosition().x, obstacleBounds.top + obstacleBounds.height);
-                velocityY = 0;
+                velocityY = 0;  // Reset vertical velocity
             }
             else if (overlapLeft < overlapRight) {
                 // Collision from the left
@@ -104,6 +133,8 @@ void Player::update(float deltaTime, Room& room) {
         ++it;
     }
 }
+
+
 
 // Draws the player in the game window
 void Player::draw(sf::RenderWindow& window) {
@@ -174,4 +205,11 @@ int Player::getSelectedItemIndex() const {
 
 const Inventory& Player::getInventory() const {
     return inventory;
+}
+
+void Player::respawn() {
+    playerShape.setPosition(50, 318); // Reset to initial position
+    isJumping = false;  // Player is on the ground
+    velocityY = 0.0f;  // Reset vertical velocity
+    isGrounded = true;  // Player is grounded
 }

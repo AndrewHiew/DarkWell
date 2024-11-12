@@ -6,6 +6,14 @@ int Character::getMaxHP() const { return maxHP; }
 
 int Character::getCurrentHP() const { return currentHP; }
 
+void Character::setCurrentHP(int acurrentHP) {
+    currentHP = acurrentHP;
+}
+
+void Character::setMaxHP(int amaxHP) {
+    maxHP = amaxHP;
+}
+
 void Character::takeDamage(int damage) {
     currentHP -= damage;
     if (currentHP < 0) currentHP = 0;  // Prevent negative HP

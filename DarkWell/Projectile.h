@@ -6,11 +6,11 @@ private:
     sf::RectangleShape shape;
     float speed; // Speed of the projectile
 public:
-    Projectile(){}
+    Projectile():speed(500.0f) {}
 
     Projectile(float startX, float startY, float angle)
         : speed(500.0f) { // Set the speed of the projectile
-        shape.setSize(sf::Vector2f(2.0f, 1.0f)); // Size of the projectile
+        shape.setSize(sf::Vector2f(5.0f, 5.0f)); // Size of the projectile
         shape.setFillColor(sf::Color::Red); // Color of the projectile
         shape.setPosition(startX, startY);
 

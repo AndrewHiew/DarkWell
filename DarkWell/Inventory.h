@@ -9,7 +9,7 @@ private:
 public:
     ~Inventory() {
         // Automatically handled by SinglyLinkedList destructor
-        clear();  // Optional: you can clear items in destructor
+        clear();
     }
 
     void addItem(Item* item) { items.pushBack(item); }
@@ -56,7 +56,7 @@ public:
 
     void clear() {
         while (!isEmpty()) {
-            removeItem(0); 
+            removeItem(0);
         }
     }
 };

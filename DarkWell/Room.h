@@ -1,6 +1,7 @@
 #pragma once
 #include "NormalObstacle.h"
 #include "MovingObstacle.h"
+#include "KillObstacle.h"
 #include "List.h"
 #include <SFML/Graphics.hpp>
 
@@ -23,4 +24,5 @@ public:
     void addObstacle(Obstacle* obstacle);  // Add obstacle to the room
     const List<Obstacle*>& getObstacles() const;  // Return the list of obstacle pointers
     void draw(sf::RenderWindow& window);  // Draw all obstacles
+    bool checkKillCollision(const sf::FloatRect& playerBounds) const;
 };

@@ -129,6 +129,8 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="KillObstacle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovingObstacle.cpp" />
     <ClCompile Include="NormalObstacle.cpp" />
@@ -141,8 +143,10 @@
     <ClInclude Include="DoublyLinkedNode.h" />
     <ClInclude Include="DoublyLinkedNodeIterator.h" />
     <ClInclude Include="GameEngine.h" />
+    <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="KillObstacle.h" />
     <ClInclude Include="LazerGun.h" />
     <ClInclude Include="MovingObstacle.h" />
     <ClInclude Include="NodeIterator.h" />
@@ -152,10 +156,14 @@
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Queue.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shovel.h" />
     <ClInclude Include="SinglyLinkedList.h" />
     <ClInclude Include="Tree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Arial.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

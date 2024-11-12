@@ -10,15 +10,20 @@ public:
     ~GameEngine();
     int StartGame();
     List<Room*> rooms;
+    bool gamePaused;
 
 private:
-    void drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape);
+    void drawInventoryOverlay(
+        sf::RenderWindow& window, 
+        Player& player, 
+        sf::RectangleShape& lazerGunShape, 
+        sf::RectangleShape& shovelShape);
     Room* initializeRoom1();  // Method to initialize Room 1
     Room* initializeRoom2();  // Method to initialize Room 2
     Room* initializeRoom3();  // Method to initialize Room 3
     Room* initializeRoom4();  // Method to initialize Room 4
     void handleEvents(sf::RenderWindow& window);  // Method to handle window events
     void updateObstacles(Room* currentRoom, float deltaTime);  // Method to update obstacles
-    void handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms);  // Method for room transitions
+    void handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms, bool& isRespawning);  // Method for room transitions
     void cleanUp();  // Method to clean up rooms
 };

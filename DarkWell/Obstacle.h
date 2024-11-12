@@ -21,6 +21,7 @@ public:
 
     // Set position for the obstacle
     void setPosition(float x, float y);
+    sf::Vector2f getPosition() const;
 
     // Virtual destructor for proper cleanup of derived classes
     virtual ~Obstacle() = default;

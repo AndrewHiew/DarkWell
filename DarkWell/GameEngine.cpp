@@ -8,7 +8,7 @@
 #include "LazerGun.h"
 #include "Shovel.h"
 
-GameEngine::GameEngine() {}
+GameEngine::GameEngine() : gamePaused(false) {}  // Initialize gamePaused flag
 
 GameEngine::~GameEngine() { cleanUp(); }
 
@@ -17,7 +17,7 @@ int GameEngine::StartGame() {
     window.setFramerateLimit(60);
 
     Player player(100);  // Create a player with 100 HP
-    player.setPosition(50, 280);  // Initial position in Room 1
+    player.setPosition(50, 318);  // Initial position in Room 1
 
     // Add items to player's inventory
     player.addItemToInventory(new LazerGun());
@@ -32,40 +32,90 @@ int GameEngine::StartGame() {
 
     sf::Clock clock;  // For deltaTime calculations
 
+    bool playerDead = false;
+    bool isRespawning = false;
+
     // Main game loop
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 window.close();
+            }
+
+            // Check for respawn if player is dead
+            if (playerDead && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
+                currentRoom = rooms[0];       // Set current room to Room 1
+                player.respawn();
+                player.setCurrentHP(100);     // Reset health
+                playerDead = false;
+                isRespawning = true;
+                gamePaused = false;  // Unpause the game when respawning
+
+                // Additional Debug Info
+                std::cout << "Player position after respawn: ("
+                    << player.getPosition().x << ", "
+                    << player.getPosition().y << ")" << std::endl;
+            }
         }
 
-        float deltaTime = clock.restart().asSeconds(); // Assuming you have a clock to measure time
+        if (playerDead) {
+            // Pause the game and show respawn dialog
+            gamePaused = true;  // Set game as paused
 
-        player.handleInput();  // Handle player input
+            sf::Text deathText;
+            sf::Font font;
+            if (!font.loadFromFile("arial.ttf")) {  // Load a font (make sure the file exists)
+                std::cerr << "Failed to load font!" << std::endl;
+            }
+            deathText.setFont(font);
+            deathText.setString("You Died! Press 'R' to Respawn");
+            deathText.setCharacterSize(24);
+            deathText.setFillColor(sf::Color::Red);
+            deathText.setPosition(150, 180);
+
+            window.clear(sf::Color::Black);
+            window.draw(deathText);
+            window.display();
+            continue;  // Skip the rest of the update and render when player is dead
+        }
+
+        if (gamePaused) continue;  // Skip game updates if paused
+
+        float deltaTime = clock.restart().asSeconds();
+
+        player.handleInput();
+        updateObstacles(currentRoom, deltaTime);
+        handleRoomTransitions(player, currentRoom, rooms, isRespawning);
+
+        isRespawning = false;
+
+        // Check for collision with KillObstacle
+        if (currentRoom->checkKillCollision(player.getBounds())) {
+            playerDead = true;  // Player died
+            gamePaused = true;  // Pause the game
+            continue;  // Skip the rest of the frame
+        }
 
         window.clear(sf::Color::White);
-
-        currentRoom->draw(window);  // Draw current room (or any other background)
-        player.draw(window);  // Draw the player
-
-        player.drawInventoryOverlay(window);  // Draw inventory overlay
+        currentRoom->draw(window);
+        player.draw(window);
+        player.drawInventoryOverlay(window);
 
         // Update logic
-        player.update(deltaTime, *currentRoom); // Update player
+        player.update(deltaTime, *currentRoom);
         if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
-            lazerGun->updateProjectiles(deltaTime); // Update projectiles
+            lazerGun->updateProjectiles(deltaTime);
+            lazerGun->drawProjectiles(window);
         }
 
-        // In your draw function:
-        if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
-            lazerGun->drawProjectiles(window); // Draw projectiles for the LazerGun
-        }
-
-        window.display();  // Display what has been drawn
+        window.display();
     }
+
     return 0;
 }
+
+
 
 void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape) {
     // Draw the Lazer Gun shape
@@ -103,6 +153,9 @@ Room* GameEngine::initializeRoom1() {
 
     room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     room1->addObstacle(new MovingObstacle(0, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
+    room1->addObstacle(new KillObstacle(200, 300, 20, 20)); // Add KillObstacle
+    room1->addObstacle(new KillObstacle(400, 320, 20, 20)); // Add KillObstacle
+    room1->addObstacle(new KillObstacle(300, 360, 40, 20)); // Add KillObstacle
     return room1;
 }
 
@@ -145,6 +198,8 @@ void GameEngine::handleEvents(sf::RenderWindow& window) {
     }
 }
 
+
+// Method to update moving obstacle
 void GameEngine::updateObstacles(Room* currentRoom, float deltaTime) {
     // Use List's custom iterator to iterate over all obstacles
     typename List<Obstacle*>::Iterator it = currentRoom->getObstacles().getIteratorFromFront();
@@ -158,8 +213,10 @@ void GameEngine::updateObstacles(Room* currentRoom, float deltaTime) {
     }
 }
 
+// Method to handle room transitions
+void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms, bool& isRespawning) {
+    if (isRespawning) return;
 
-void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms) {
     sf::FloatRect playerBounds = player.getBounds();
 
     // Check transitions to different rooms

@@ -15,6 +15,7 @@ private:
     float jumpHeight;
     float gravity;
     bool isJumping;
+    bool isGrounded;  // New boolean variable
     float velocityY;
     Inventory inventory;
     int selectedItemIndex;
@@ -22,7 +23,7 @@ private:
     bool tabPressed = false;  // State of Tab key
     bool spacePressed = false; // State of Space key
 
-    //Projectile
+    // Projectile
     List<Projectile> projectiles; // List to hold projectiles
     float facingAngle; // Angle the player is facing
 
@@ -41,6 +42,7 @@ public:
     sf::FloatRect getBounds() const;  // Get bounding box for collision
     void setPosition(float x, float y);  // Set player position
     sf::Vector2f getPosition() const;  // Get current position of player
+    std::string vectorToString(const sf::Vector2f& position);
 
     // Inventory functions
     void addItemToInventory(Item* item);  // Add item to inventory
@@ -48,5 +50,5 @@ public:
     void useSelectedItem();               // Use selected item
     int getSelectedItemIndex() const;     // Get index of currently selected item
     const Inventory& getInventory() const; // Get inventory (const reference)
-
+    void respawn();
 };

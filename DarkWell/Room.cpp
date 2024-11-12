@@ -31,3 +31,16 @@ string Room::getName() { return name; }
 const List<Obstacle*>& Room::getObstacles() const {
     return obstacles;  // Return the list of pointers to obstacles
 }
+
+bool Room::checkKillCollision(const sf::FloatRect& playerBounds) const {
+    auto it = obstacles.getIteratorFromFront();
+    while (it != it.end()) {
+        if (auto killObstacle = dynamic_cast<KillObstacle*>(it.getCurrent()->getValue())) {
+            if (killObstacle->checkCollision(playerBounds)) {
+                return true;
+            }
+        }
+        ++it;
+    }
+    return false;
+}

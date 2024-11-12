@@ -1,47 +1,46 @@
 #pragma once
 #include "Item.h"
 #include "Projectile.h"
-#include "List.h"
+#include "Queue.h"
 #include <iostream>
-
 
 class LazerGun : public Item {
 private:
-    List<Projectile> projectiles;
+    Queue<Projectile> projectiles;  // Use Queue instead of List
 
 public:
-    LazerGun() {
+    LazerGun() : projectiles(5) {  // Initialize Queue with a max size of 5
         color = sf::Color(128, 0, 128);  // Purple for Lazer Gun
     }
 
     std::string getName() const override { return "Lazer Gun"; }
 
-    // Keep the previous method
+    // Use method with parameters for shooting projectiles
     void use(float playerX, float playerY, float angle) {
-        // Implementation for shooting projectile
-        projectiles.pushBack(Projectile(playerX, playerY, angle));
+        projectiles.enqueue(Projectile(playerX, playerY, angle));
         std::cout << "Firing LazerGun at position (" << playerX << ", " << playerY << ") with angle " << angle << std::endl;
     }
 
     // Override the base method with no parameters
     void use() const override {
-        // Optionally throw an error or handle as needed, or provide default behavior
         throw std::runtime_error("Use method without parameters should not be called for LazerGun.");
     }
 
+    // Update all projectiles
     void updateProjectiles(float deltaTime) {
-        // Update all projectiles
-        // std::cout << "Updating projectiles. Total: " << projectiles.size() << std::endl;
-        for (int i = 0; i < projectiles.size(); ++i) {
-            projectiles[i].update(deltaTime);
+        int size = projectiles.size();
+        for (int i = 0; i < size; ++i) {
+            projectiles.front().update(deltaTime);
+            projectiles.enqueue(projectiles.dequeue());
         }
     }
 
+    // Draw all projectiles
     void drawProjectiles(sf::RenderWindow& window) {
-        // Draw all projectiles
-        // std::cout << "Drawing projectiles. Total: " << projectiles.size() << std::endl;
-        for (int i = 0; i < projectiles.size(); ++i) {
-            projectiles[i].draw(window);
+        int size = projectiles.size();
+        for (int i = 0; i < size; ++i) {
+            projectiles.front().draw(window);
+            projectiles.enqueue(projectiles.dequeue());
         }
     }
 };

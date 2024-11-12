@@ -28,6 +28,12 @@ void Obstacle::setPosition(float x, float y) {
     shape.setPosition(x, y); // Set position of the shape
 }
 
+// Get position of the obstacle
+sf::Vector2f Obstacle::getPosition() const{
+    return shape.getPosition();
+}
+
+
 // Get the bounds for collision detection
 sf::FloatRect Obstacle::getBounds() const {
     return shape.getGlobalBounds();
