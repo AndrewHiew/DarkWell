@@ -1,0 +1,40 @@
+#pragma once
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Define all available Items
+class Item;
+class LazerGun;
+class Shovel;
+
+class ItemVisitor
+{
+public:
+	virtual void Visit(Item& item);
+	virtual void Visit(LazerGun& lazerGun);
+	virtual void Visit(Shovel& shovel);
+};
+
+class ItemVisitorUse : public ItemVisitor
+{
+private:
+	float playerX;
+	float playerY; 
+	float angle;
+
+public:
+	ItemVisitorUse(float pX, float pY, float pAngle);
+	virtual void Visit(Item& item);
+	virtual void Visit(LazerGun& lazerGun);
+	virtual void Visit(Shovel& shovel);
+};
+
+class ItemVisitorPrint
+{
+public:
+	virtual void Visit(Item& item);
+	virtual void Visit(LazerGun& lazerGun);
+	virtual void Visit(Shovel& shovel);
+};

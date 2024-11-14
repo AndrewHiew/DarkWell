@@ -130,6 +130,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="ItemVisitor.cpp" />
     <ClCompile Include="KillObstacle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovingObstacle.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="Undead.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
@@ -146,6 +148,7 @@
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="ItemVisitor.h" />
     <ClInclude Include="KillObstacle.h" />
     <ClInclude Include="LazerGun.h" />
     <ClInclude Include="MovingObstacle.h" />
@@ -161,6 +164,7 @@
     <ClInclude Include="Shovel.h" />
     <ClInclude Include="SinglyLinkedList.h" />
     <ClInclude Include="Tree.h" />
+    <ClInclude Include="Undead.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Arial.ttf" />

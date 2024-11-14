@@ -2,6 +2,8 @@
 #include "Item.h"
 #include <iostream>
 
+class ItemVisitor;
+
 class Shovel : public Item {
 public:
     Shovel() {
@@ -10,4 +12,8 @@ public:
 
     std::string getName() const override { return "Shovel"; }
     void use() const override { std::cout << "Digging with the Shovel.\n"; }
+
+    virtual void accept(ItemVisitor& v) {
+        v.Visit(*this);
+    }
 };

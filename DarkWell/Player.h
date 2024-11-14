@@ -7,6 +7,9 @@
 #include "LazerGun.h"
 #include "Shovel.h"
 #include "Projectile.h"
+#include "ItemVisitor.h"
+
+class Room;
 
 class Player : public Character {
 private:
@@ -24,8 +27,10 @@ private:
     bool spacePressed = false; // State of Space key
 
     // Projectile
-    List<Projectile> projectiles; // List to hold projectiles
     float facingAngle; // Angle the player is facing
+
+    // Visitor Pointer
+    ItemVisitor* V;
 
 public:
     // Constructor

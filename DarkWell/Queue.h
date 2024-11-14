@@ -9,12 +9,13 @@ private:
     int maxSize;
 
 public:
+    // Limit Queue size to 5, additional enqueues will deque the oldest item in the queue.
     Queue(int maxSize = 5) : maxSize(maxSize) {}
 
     // Enqueue a new item; dequeue if the max size is reached
     void enqueue(const T& value) {
         if (list.size() >= maxSize) {
-            dequeue();  // Dequeue the oldest item if at max capacity
+            dequeue();
         }
         list.pushBack(value);
     }

@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Queue">
       <UniqueIdentifier>{cc73a9e6-2323-491f-ae79-70e2adbda0e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Obstacle">
+      <UniqueIdentifier>{6ea6857b-8b6c-4d5d-889e-1c0757c2998f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Character">
+      <UniqueIdentifier>{2b3ed5b3-42c2-4ce9-9dc7-e7a9e35201fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,28 +51,34 @@
     <ClCompile Include="Room.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Obstacle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalObstacle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MovingObstacle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KillObstacle.cpp">
+      <Filter>Source Files\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="MovingObstacle.cpp">
+      <Filter>Source Files\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalObstacle.cpp">
+      <Filter>Source Files\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Obstacle.cpp">
+      <Filter>Source Files\Obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Undead.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemVisitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="GameStateManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Undead.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemVisitor.h">
+      <Filter>Header Files\Items</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

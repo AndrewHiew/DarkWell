@@ -13,6 +13,7 @@ Player::Player(int maxHP)
     selectedItemIndex = 0; // Initial Item
     facingAngle = 0.0f; // Initial Angle
     isGrounded = true;
+    V = nullptr;
 }
 
 Player::~Player() {
@@ -85,6 +86,8 @@ void Player::update(float deltaTime, Room& room) {
     // Reset grounded status before checking new collisions
     isGrounded = false;
 
+    room.checkPlayerCollisions(*this);
+
     // Iterate over the room's obstacles to detect collisions
     auto it = room.getObstacles().getIteratorFromFront();
     while (it != it.end()) {
@@ -96,7 +99,7 @@ void Player::update(float deltaTime, Room& room) {
             if (playerBounds.intersects(obstacleBounds)) {
                 // Handle collision with KillObstacle (red color)
                 std::cout << "Player collided with KillObstacle!" << std::endl;
-                break;  // Player collided with a kill obstacle
+                break;
             }
         }
 
@@ -133,8 +136,6 @@ void Player::update(float deltaTime, Room& room) {
         ++it;
     }
 }
-
-
 
 // Draws the player in the game window
 void Player::draw(sf::RenderWindow& window) {
@@ -189,11 +190,17 @@ void Player::useSelectedItem() {
 
         if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(selectedItem)) {
             // Call use on the LazerGun, passing player position and facing angle
-            lazerGun->use(getPosition().x, getPosition().y, facingAngle);
+            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle);
+            lazerGun->accept(*V);
+            delete V;
+            V = nullptr;
         }
         else {
             // Fallback for other items if applicable
-            selectedItem->use();
+            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle);
+            selectedItem->accept(*V);
+            delete V;
+            V = nullptr;
         }
     }
 }

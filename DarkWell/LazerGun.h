@@ -4,6 +4,8 @@
 #include "Queue.h"
 #include <iostream>
 
+class ItemVisitor;
+
 class LazerGun : public Item {
 private:
     Queue<Projectile> projectiles;  // Use Queue instead of List
@@ -42,5 +44,9 @@ public:
             projectiles.front().draw(window);
             projectiles.enqueue(projectiles.dequeue());
         }
+    }
+
+    virtual void accept(ItemVisitor& v) {
+        v.Visit(*this);
     }
 };

@@ -13,6 +13,7 @@ public:
     bool gamePaused;
 
 private:
+
     void drawInventoryOverlay(
         sf::RenderWindow& window, 
         Player& player, 

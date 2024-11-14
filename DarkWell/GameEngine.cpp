@@ -16,7 +16,7 @@ int GameEngine::StartGame() {
     sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell");
     window.setFramerateLimit(60);
 
-    Player player(100);  // Create a player with 100 HP
+    Player player(100);
     player.setPosition(50, 318);  // Initial position in Room 1
 
     // Add items to player's inventory
@@ -97,7 +97,7 @@ int GameEngine::StartGame() {
             continue;  // Skip the rest of the frame
         }
 
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
         currentRoom->draw(window);
         player.draw(window);
         player.drawInventoryOverlay(window);
@@ -138,6 +138,9 @@ void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, 
 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
+    Undead* undead1 = new Undead(100, 500, 200);
+    Undead* undead2 = new Undead(100, 500, 68);
+
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
 
@@ -147,15 +150,18 @@ Room* GameEngine::initializeRoom1() {
     room1->addObstacle(new NormalObstacle(0, 0, 10, 360));  // Left Wall
     room1->addObstacle(new NormalObstacle(630, 0, 10, 300));  // Right Wall
 
-    room1->addObstacle(new NormalObstacle(300, 250, 100, 20));
-    room1->addObstacle(new NormalObstacle(100, 200, 100, 20));
-    room1->addObstacle(new NormalObstacle(500, 100, 60, 20));
+    room1->addObstacle(new NormalObstacle(300, 250, 100, 20)); // Left Platform
+    room1->addObstacle(new NormalObstacle(100, 200, 100, 20)); // Middle Platform
+    room1->addObstacle(new NormalObstacle(500, 100, 60, 20)); // Top Right Platform
 
     room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     room1->addObstacle(new MovingObstacle(0, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     room1->addObstacle(new KillObstacle(200, 300, 20, 20)); // Add KillObstacle
     room1->addObstacle(new KillObstacle(400, 320, 20, 20)); // Add KillObstacle
-    room1->addObstacle(new KillObstacle(300, 360, 40, 20)); // Add KillObstacle
+    room1->addObstacle(new KillObstacle(0, 360, 640, 20)); // Add KillObstacle
+
+    room1->getCharacters().pushBack(undead1);
+    room1->getCharacters().pushBack(undead2);
     return room1;
 }
 
