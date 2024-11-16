@@ -84,6 +84,9 @@
     <ClCompile Include="LazerGun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ItemObstacle.cpp">
+      <Filter>Source Files\Obstacle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="ItemVisitor.h">
       <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemObstacle.h">
+      <Filter>Header Files\Obstacle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

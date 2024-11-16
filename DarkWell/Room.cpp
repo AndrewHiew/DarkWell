@@ -97,25 +97,68 @@ bool Room::checkKillCollision(const sf::FloatRect& playerBounds) const {
 }
 
 // Method to update the Room Class
-void Room::update(float deltaTime, Player& player) {
+void Room::update(float deltaTime, Player& player, sf::RenderWindow& window) {
     // Apply damage when Undead collides with the player
     Node<Character*>* current = characters.getHead();
+    Node<Character*>* previous = nullptr;
 
     while (current != nullptr) {
         Undead* undead = dynamic_cast<Undead*>(current->value);
         if (undead && !undead->getIsDead()) {
             undead->checkPlayerCollision(player);
         }
+
+        // Check if the character is dead
+        if (undead && undead->getIsDead()) {
+            // If the character is dead, just don't draw it
+            // No need to remove it from the list
+        }
+        
+        // Move to the next node
+        previous = current;
         current = current->next;
     }
 }
+
 
 void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& window) {
     if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
         player.updateProjectiles(deltaTime);
         player.drawProjectiles(window);
+
+        // Check for collisions with enemies (NPCs)
+        auto& characters = getCharacters();
+        int projectileCount = player.getProjectiles().size();
+
+        // Iterate over projectiles
+        for (int i = 0; i < projectileCount; ++i) {
+            Projectile& projectile = player.getProjectiles().front();
+            sf::FloatRect projectileBounds = projectile.getBounds(); // Assuming Projectile has getBounds
+
+            // Check for collision with each character (enemy)
+            auto it = characters.getIterator();
+            while (it != it.end()) {
+                Character* character = it.getCurrent()->getValue();
+                sf::FloatRect characterBounds = character->getBounds();  // Assuming Character has getBounds
+
+                // If the projectile collides with the enemy
+                if (projectileBounds.intersects(characterBounds)) {
+                    // Apply damage to the enemy (20 damage in this case)
+                    character->takeDamage(20);
+                    std::cout << "Projectile hit enemy! Dealt 20 damage." << std::endl;
+                    std::cout << character->getCurrentHP() << std::endl;
+
+                    // Remove the projectile after hitting the enemy
+                    player.getProjectiles().dequeue();
+                    break; // Exit loop after projectile hit
+                }
+
+                ++it;
+            }
+        }
     }
 }
+
 
 // Method to reset all NPC
 void Room::resetNPC() {
@@ -127,6 +170,20 @@ void Room::resetNPC() {
         Undead* undead = dynamic_cast<Undead*>(current->value);
         if (undead) {
             undead->resetNPC();  // Call the resetNPC method of the Undead class
+        }
+        current = current->next;  // Move to the next character
+    }
+}
+
+void Room::resetNPCdead() {
+    Node<Character*>* current = characters.getHead();
+
+    // Iterate through each character in the room
+    while (current != nullptr) {
+        // Check if the character is of type Undead
+        Undead* undead = dynamic_cast<Undead*>(current->value);
+        if (undead) {
+            undead->resetNPCdead();  // Call the resetNPC method of the Undead class
         }
         current = current->next;  // Move to the next character
     }

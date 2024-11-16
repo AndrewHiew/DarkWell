@@ -36,4 +36,5 @@ public:
     void update(float deltaTime, const List<Obstacle*>& obstacles, sf::Vector2f playerPosition);
     void moveTowardsPlayer(sf::Vector2f playerPosition, float deltaTime);
     void resetNPC();
+    void resetNPCdead();
 };

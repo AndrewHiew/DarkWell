@@ -7,6 +7,7 @@
 #include "List.h"
 #include "LazerGun.h"
 #include "Shovel.h"
+#include "ItemObstacle.h"
 
 // Default constructor
 GameEngine::GameEngine() : gamePaused(false) {}  // Initialize gamePaused flag
@@ -63,7 +64,7 @@ int GameEngine::StartGame() {
                 player.setPlayerDead(false);
                 isRespawning = true;
                 gamePaused = false;  // Unpause the game when respawning
-                respawnNPC();
+                respawnNPCdead();
 
                 // Additional Debug Info
                 std::cout << "Player position after respawn: ("
@@ -112,7 +113,7 @@ int GameEngine::StartGame() {
 
         window.clear(sf::Color::Black);
         currentRoom->draw(window);
-        currentRoom->update(deltaTime, player);
+        currentRoom->update(deltaTime, player, window);
 
         player.draw(window);
 
@@ -133,6 +134,15 @@ void GameEngine::respawnNPC() {
     while (it != it.end()) {
         Room* room = it.getCurrent()->getValue();
         room->resetNPC();
+        ++it;
+    }
+}
+
+void GameEngine::respawnNPCdead() {
+    typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
+    while (it != it.end()) {
+        Room* room = it.getCurrent()->getValue();
+        room->resetNPCdead();
         ++it;
     }
 }
@@ -163,6 +173,8 @@ Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
     Undead* undead1 = new Undead(100, 500, 200);
     Undead* undead2 = new Undead(100, 530, 68);
+
+    room1->addObstacle(new ItemObstacle(150, 180, "Lazer Gun")); // The LazerGun Object
 
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle

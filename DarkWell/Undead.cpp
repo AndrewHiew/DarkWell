@@ -37,7 +37,15 @@ void Undead::draw(sf::RenderWindow& window) {
     }
 }
 
-bool Undead::getIsDead() { return isDead; }
+bool Undead::getIsDead() {
+    if (currentHP <= 0) {
+        isDead = true;
+        return isDead;
+    }
+    else {
+        return isDead;
+    }
+}
 
 // Simple AI: Move towards the player's position
 void Undead::moveTowardsPlayer(sf::Vector2f playerPosition, float deltaTime) {
@@ -57,10 +65,11 @@ void Undead::moveTowardsPlayer(sf::Vector2f playerPosition, float deltaTime) {
 void Undead::takeDamage(int damage) {
     currentHP -= damage;
     if (currentHP <= 0) {
-        isDead = true;
         currentHP = 0;
+        setIsDead(true);  // Mark the undead as dead
     }
 }
+
 
 // Method to Deal damage to Player
 void Undead::checkPlayerCollision(Player& player) {
@@ -117,4 +126,10 @@ void Undead::update(float deltaTime, const List<Obstacle*>& obstacles, sf::Vecto
 void Undead::resetNPC() {
     undeadShape.setPosition(initX, initY);
     currentHP = 100;
+}
+
+void Undead::resetNPCdead() {
+    undeadShape.setPosition(initX, initY);
+    currentHP = 100;
+    isDead = false;
 }

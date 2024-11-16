@@ -30,4 +30,5 @@ private:
     void handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms, bool& isRespawning);  // Method for room transitions
     void cleanUp();  // Method to clean up rooms
     void respawnNPC(); // Method to respawn all NPC
+    void respawnNPCdead(); // Method to respawn all NPC when player dies
 };
