@@ -1,15 +1,19 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
+
+class Undead;  // Forward declaration of Undead class
 
 class Projectile {
 private:
     sf::RectangleShape shape;
     float speed; // Speed of the projectile
+
 public:
-    Projectile():speed(500.0f) {}
+    Projectile() : speed(500.0f) {}
 
     Projectile(float startX, float startY, float angle)
-        : speed(500.0f) { // Set the speed of the projectile
+        : speed(500.0f) {
         shape.setSize(sf::Vector2f(5.0f, 5.0f)); // Size of the projectile
         shape.setFillColor(sf::Color::Red); // Color of the projectile
         shape.setPosition(startX, startY);
@@ -32,5 +36,16 @@ public:
 
     void draw(sf::RenderWindow& window) {
         window.draw(shape); // Draw the projectile
+    }
+
+    // New method to check if the projectile collides with an Undead
+    bool checkCollisionWithProjectile(Projectile& projectile) {
+        return getBounds().intersects(projectile.getBounds());
+    }
+
+    // Method to destroy the projectile
+    void destroy() {
+        // Mark this projectile for destruction (e.g., set a flag or directly remove it from the queue)
+        std::cout << "Projectile destroyed!" << std::endl;
     }
 };

@@ -37,5 +37,6 @@ public:
     void draw(sf::RenderWindow& window);  // Draw all obstacles and characters
     bool checkKillCollision(const sf::FloatRect& playerBounds) const;
     void update(float deltaTime, Player& player);
+    void updateProjectile(float deltaTime, Player& player, sf::RenderWindow& window);
     void resetNPC();
 };

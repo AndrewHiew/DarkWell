@@ -110,6 +110,13 @@ void Room::update(float deltaTime, Player& player) {
     }
 }
 
+void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& window) {
+    if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
+        player.updateProjectiles(deltaTime);
+        player.drawProjectiles(window);
+    }
+}
+
 // Method to reset all NPC
 void Room::resetNPC() {
     Node<Character*>* current = characters.getHead();

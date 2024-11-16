@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "Queue.h"
 #include "Character.h"
 #include "Room.h"
 #include "Inventory.h"
@@ -26,6 +27,9 @@ private:
     bool isImmune; // Status to check if player is immune
     bool playerDead;
 
+    // Projectile Queue
+    Queue<Projectile> projectiles;
+
     bool tabPressed = false;  // State of Tab key
     bool spacePressed = false; // State of Space key
 
@@ -43,6 +47,7 @@ public:
     // Getter and setter
     bool getPlayerDead();
     void setPlayerDead(bool isDead);
+    Queue<Projectile>& getProjectiles();
 
     // Player-specific methods
     void handleInput();
@@ -66,4 +71,9 @@ public:
     // Player Behaviour Method
     void takeDamage(int damage);
     void respawn();
+
+    // Update all projectiles
+    void updateProjectiles(float deltaTime);
+    void drawProjectiles(sf::RenderWindow& window);
+
 };

@@ -8,10 +8,13 @@
 #include "LazerGun.h"
 #include "Shovel.h"
 
+// Default constructor
 GameEngine::GameEngine() : gamePaused(false) {}  // Initialize gamePaused flag
 
+// Destructor
 GameEngine::~GameEngine() { cleanUp(); }
 
+// Main method to start the game
 int GameEngine::StartGame() {
     sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell");
     window.setFramerateLimit(60);
@@ -19,9 +22,19 @@ int GameEngine::StartGame() {
     Player player(60);
     player.setPosition(50, 318);  // Initial position in Room 1
 
-    // Add items to player's inventory
+    // Add items to player's inventory`
     player.addItemToInventory(new LazerGun());
     player.addItemToInventory(new Shovel());
+
+    // Load and start playing background music
+    if (!backgroundMusic.openFromFile("lacrimosa.mp3")) {
+        std::cerr << "Failed to load lacrimosa.mp3!" << std::endl;
+        return -1;  // Exit if music fails to load
+    }
+
+    backgroundMusic.setLoop(true);    // Enable looping
+    backgroundMusic.setVolume(30);    // Set volume (adjust as needed)
+    backgroundMusic.play();
 
     // Initialize rooms and their obstacles
     rooms.pushBack(initializeRoom1());
@@ -105,10 +118,8 @@ int GameEngine::StartGame() {
 
         // Update logic
         player.update(deltaTime, *currentRoom);
-        if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
-            lazerGun->updateProjectiles(deltaTime);
-            lazerGun->drawProjectiles(window);
-        }
+        currentRoom->updateProjectile(deltaTime, player, window);
+        
 
         window.display();
     }
@@ -116,6 +127,7 @@ int GameEngine::StartGame() {
     return 0;
 }
 
+// Method to respawn NPCs
 void GameEngine::respawnNPC() {
     typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
     while (it != it.end()) {
@@ -125,6 +137,7 @@ void GameEngine::respawnNPC() {
     }
 }
 
+// Method to draw the Inventory Overlay
 void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape) {
     // Draw the Lazer Gun shape
     window.draw(lazerGunShape);
@@ -144,6 +157,8 @@ void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, 
     selectedShape->setOutlineThickness(0);
 }
 
+
+// Methods to initialize Rooms 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
     Undead* undead1 = new Undead(100, 500, 200);
@@ -165,7 +180,7 @@ Room* GameEngine::initializeRoom1() {
     room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     room1->addObstacle(new MovingObstacle(0, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     room1->addObstacle(new KillObstacle(200, 300, 20, 20)); // Add KillObstacle
-    room1->addObstacle(new KillObstacle(400, 320, 20, 20)); // Add KillObstacle
+    room1->addObstacle(new KillObstacle(400, 340, 20, 20)); // Add KillObstacle
     room1->addObstacle(new KillObstacle(0, 360, 640, 20)); // Add KillObstacle
 
     room1->getCharacters().pushBack(undead1);
@@ -202,6 +217,10 @@ Room* GameEngine::initializeRoom4() {
     return room4;
 }
 
+Room* GameEngine::initializeRoom5() {
+    Room* room5 = new Room("Room 5");
+    return room5;
+}
 
 void GameEngine::handleEvents(sf::RenderWindow& window) {
     sf::Event event;
@@ -211,7 +230,6 @@ void GameEngine::handleEvents(sf::RenderWindow& window) {
         }
     }
 }
-
 
 // Method to update moving obstacle
 void GameEngine::updateObstacles(Room* currentRoom, float deltaTime) {
@@ -266,7 +284,7 @@ void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<
     }
 }
 
-
+// Method to delete rooms
 void GameEngine::cleanUp() {
     typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
     while (it != it.end()) {

@@ -2,12 +2,14 @@
 #include <iostream>
 #include <string>
 
+
 using namespace std;
 
 // Define all available Items
 class Item;
 class LazerGun;
 class Shovel;
+class Player;
 
 class ItemVisitor
 {
@@ -23,9 +25,10 @@ private:
 	float playerX;
 	float playerY; 
 	float angle;
+	Player* player;
 
 public:
-	ItemVisitorUse(float pX, float pY, float pAngle);
+	ItemVisitorUse(float pX, float pY, float pAngle, Player* aPlayer);
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
 	virtual void Visit(Shovel& shovel);

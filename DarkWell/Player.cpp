@@ -17,6 +17,7 @@ Player::Player(int maxHP)
     damageImmunityTimer = 0.0f;
     isImmune = false;
     playerDead = false;
+    projectiles = Queue<Projectile>(5);
 }
 
 Player::~Player() {
@@ -191,8 +192,6 @@ void Player::drawInventoryOverlay(sf::RenderWindow& window) {
     }
 }
 
-
-
 // Returns the bounding box of the player for collision detection
 sf::FloatRect Player::getBounds() const {
     return playerShape.getGlobalBounds();
@@ -220,18 +219,36 @@ void Player::useSelectedItem() {
 
         if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(selectedItem)) {
             // Call use on the LazerGun, passing player position and facing angle
-            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle);
+            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle, this);
             lazerGun->accept(*V);
             delete V;
             V = nullptr;
         }
         else {
             // Fallback for other items if applicable
-            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle);
+            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle, this);
             selectedItem->accept(*V);
             delete V;
             V = nullptr;
         }
+    }
+}
+
+// Update all projectiles
+void Player::updateProjectiles(float deltaTime) {
+    int size = projectiles.size();
+    for (int i = 0; i < size; ++i) {
+        projectiles.front().update(deltaTime);
+        projectiles.enqueue(projectiles.dequeue());
+    }
+}
+
+// Draw all projectiles
+void Player::drawProjectiles(sf::RenderWindow& window) {
+    int size = projectiles.size();
+    for (int i = 0; i < size; ++i) {
+        projectiles.front().draw(window);
+        projectiles.enqueue(projectiles.dequeue());
     }
 }
 
@@ -253,3 +270,4 @@ void Player::respawn() {
 
 bool Player::getPlayerDead() { return playerDead; }
 void Player::setPlayerDead(bool isDead) { playerDead = isDead; }
+Queue<Projectile>& Player::getProjectiles() { return projectiles; }
