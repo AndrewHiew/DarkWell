@@ -6,6 +6,8 @@ Undead::Undead(int maxHP, float posX, float posY)
     undeadShape.setSize(sf::Vector2f(24, 32));  // Same size as the player
     undeadShape.setFillColor(sf::Color::Yellow);  // Temporary color
     undeadShape.setPosition(posX, posY);  // Initial position for the Undead
+    initX = posX;
+    initY = posY;
 }
 
 // Get current position of the Undead
@@ -102,4 +104,9 @@ void Undead::update(float deltaTime, const List<Obstacle*>& obstacles, sf::Vecto
         // Simple AI movement towards player
         moveTowardsPlayer(playerPosition, deltaTime);
     }
+}
+
+void Undead::resetNPC() {
+    undeadShape.setPosition(initX, initY);
+    currentHP = 100;
 }

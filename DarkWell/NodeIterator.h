@@ -25,5 +25,9 @@ public:
         return current == other.current;
     }
 
+    Node<T>* getCurrent() const {
+        return current;
+    }
+
     NodeIterator end() const { return NodeIterator((Node<T>*)0); }
 };

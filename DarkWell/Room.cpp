@@ -58,7 +58,7 @@ void Room::checkPlayerCollisions(Player& player) {
     while (current != nullptr) {
         Undead* undead = dynamic_cast<Undead*>(current->value);
         if (undead && !undead->getIsDead()) {
-            undead->update(0.016f, getObstacles(), player.getPosition());  // Call update to apply gravity and movement
+            undead->update(0.016f, getObstacles(), player.getPosition());
 
             sf::FloatRect undeadBounds = undead->getBounds();
             if (playerBounds.intersects(undeadBounds)) {
@@ -94,4 +94,24 @@ bool Room::checkKillCollision(const sf::FloatRect& playerBounds) const {
         ++it;
     }
     return false;
+}
+
+// Method to update the Room Class
+void Room::update(float deltaTime, Player& player) {
+    
+}
+
+// Method to reset all NPC
+void Room::resetNPC() {
+    Node<Character*>* current = characters.getHead();
+
+    // Iterate through each character in the room
+    while (current != nullptr) {
+        // Check if the character is of type Undead
+        Undead* undead = dynamic_cast<Undead*>(current->value);
+        if (undead) {
+            undead->resetNPC();  // Call the resetNPC method of the Undead class
+        }
+        current = current->next;  // Move to the next character
+    }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "Node.h"
 #include <stdexcept>
+#include "NodeIterator.h"  // Include NodeIterator
 
 template <typename T>
 class SinglyLinkedList {
@@ -63,5 +64,10 @@ public:
 
     Node<T>* getHead() const {
         return head;
+    }
+
+    // Method to return an iterator pointing to the start of the list
+    NodeIterator<T> getIterator() {
+        return NodeIterator<T>(head);
     }
 };

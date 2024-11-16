@@ -6,6 +6,11 @@ int Character::getMaxHP() const { return maxHP; }
 
 int Character::getCurrentHP() const { return currentHP; }
 
+// Return a reference to currentHP
+int& Character::getCurrentHP() {  
+    return currentHP;
+}
+
 void Character::setCurrentHP(int acurrentHP) {
     currentHP = acurrentHP;
 }

@@ -3,9 +3,9 @@
 #include "MovingObstacle.h"
 #include "KillObstacle.h"
 #include "List.h"
-#include "SinglyLinkedList.h"
 #include "Player.h"
 #include "Undead.h"
+#include "SinglyLinkedList.h"
 #include <SFML/Graphics.hpp>
 
 using namespace std;
@@ -17,6 +17,7 @@ private:
     List<Obstacle*> obstacles;  // List to store pointers to obstacles
     SinglyLinkedList<Character*> characters; // SinglyLinkedList for NPCs like Undead
     string name;
+
 
 public:
     // Constructors
@@ -36,4 +37,5 @@ public:
     void draw(sf::RenderWindow& window);  // Draw all obstacles and characters
     bool checkKillCollision(const sf::FloatRect& playerBounds) const;
     void update(float deltaTime, Player& player);
+    void resetNPC();
 };

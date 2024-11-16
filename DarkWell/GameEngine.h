@@ -27,4 +27,5 @@ private:
     void updateObstacles(Room* currentRoom, float deltaTime);  // Method to update obstacles
     void handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms, bool& isRespawning);  // Method for room transitions
     void cleanUp();  // Method to clean up rooms
+    void respawnNPC(); // Method to respawn all NPC
 };

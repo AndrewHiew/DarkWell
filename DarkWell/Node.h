@@ -7,5 +7,15 @@ public:
     T value;
     Node* next;
 
-    Node(T val) : value(val), next((Node*)0) {}
+    Node(T val) : value(val), next(nullptr) {}
+
+    // This method returns the value stored in the node
+    T& getValue() {
+        return value;
+    }
+
+    // Optional: const version of getValue for read-only access
+    const T& getValue() const {
+        return value;
+    }
 };

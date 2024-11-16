@@ -11,6 +11,7 @@ public:
 
     int getMaxHP() const;
     int getCurrentHP() const;
+    int& getCurrentHP();
     void setCurrentHP(int acurrentHP);
     void setMaxHP(int amaxHP);
     void takeDamage(int damage);

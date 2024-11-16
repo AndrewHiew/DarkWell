@@ -51,6 +51,7 @@ int GameEngine::StartGame() {
                 playerDead = false;
                 isRespawning = true;
                 gamePaused = false;  // Unpause the game when respawning
+                respawnNPC();
 
                 // Additional Debug Info
                 std::cout << "Player position after respawn: ("
@@ -99,6 +100,8 @@ int GameEngine::StartGame() {
 
         window.clear(sf::Color::Black);
         currentRoom->draw(window);
+        currentRoom->update(deltaTime, player);
+
         player.draw(window);
         player.drawInventoryOverlay(window);
 
@@ -115,6 +118,14 @@ int GameEngine::StartGame() {
     return 0;
 }
 
+void GameEngine::respawnNPC() {
+    typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
+    while (it != it.end()) {
+        Room* room = it.getCurrent()->getValue();
+        room->resetNPC();
+        ++it;
+    }
+}
 
 
 void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape) {
@@ -139,7 +150,7 @@ void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
     Undead* undead1 = new Undead(100, 500, 200);
-    Undead* undead2 = new Undead(100, 500, 68);
+    Undead* undead2 = new Undead(100, 530, 68);
 
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
@@ -254,7 +265,6 @@ void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<
 
 
 void GameEngine::cleanUp() {
-    // Use 'typename' to indicate that 'Iterator' is a type
     typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
     while (it != it.end()) {
         Room* room = it.getCurrent()->getValue();
