@@ -98,7 +98,16 @@ bool Room::checkKillCollision(const sf::FloatRect& playerBounds) const {
 
 // Method to update the Room Class
 void Room::update(float deltaTime, Player& player) {
-    
+    // Apply damage when Undead collides with the player
+    Node<Character*>* current = characters.getHead();
+
+    while (current != nullptr) {
+        Undead* undead = dynamic_cast<Undead*>(current->value);
+        if (undead && !undead->getIsDead()) {
+            undead->checkPlayerCollision(player);
+        }
+        current = current->next;
+    }
 }
 
 // Method to reset all NPC

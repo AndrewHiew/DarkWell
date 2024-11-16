@@ -62,6 +62,14 @@ void Undead::takeDamage(int damage) {
     }
 }
 
+// Method to Deal damage to Player
+void Undead::checkPlayerCollision(Player& player) {
+    if (!isDead && getBounds().intersects(player.getBounds())) {
+        player.takeDamage(20); // Deal 20 damage to the player
+    }
+}
+
+
 // Update method for the Undead
 void Undead::update(float deltaTime, const List<Obstacle*>& obstacles, sf::Vector2f playerPosition) {
     if (!isDead) {

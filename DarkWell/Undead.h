@@ -1,10 +1,13 @@
 #pragma once
 #include "Character.h"
 #include "Obstacle.h"
+#include "Player.h"
 #include "List.h"
 #include "Tree.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+
+class Player;
 
 class Undead : public Character {
 private:
@@ -29,6 +32,7 @@ public:
     void draw(sf::RenderWindow& window);
     void takeDamage(int damage);
 
+    void checkPlayerCollision(Player& player);
     void update(float deltaTime, const List<Obstacle*>& obstacles, sf::Vector2f playerPosition);
     void moveTowardsPlayer(sf::Vector2f playerPosition, float deltaTime);
     void resetNPC();

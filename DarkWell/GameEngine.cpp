@@ -16,7 +16,7 @@ int GameEngine::StartGame() {
     sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell");
     window.setFramerateLimit(60);
 
-    Player player(100);
+    Player player(60);
     player.setPosition(50, 318);  // Initial position in Room 1
 
     // Add items to player's inventory
@@ -32,7 +32,6 @@ int GameEngine::StartGame() {
 
     sf::Clock clock;  // For deltaTime calculations
 
-    bool playerDead = false;
     bool isRespawning = false;
 
     // Main game loop
@@ -44,11 +43,11 @@ int GameEngine::StartGame() {
             }
 
             // Check for respawn if player is dead
-            if (playerDead && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
+            if (player.getPlayerDead() && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::R) {
                 currentRoom = rooms[0];       // Set current room to Room 1
                 player.respawn();
-                player.setCurrentHP(100);     // Reset health
-                playerDead = false;
+                player.setCurrentHP(60);     // Reset health
+                player.setPlayerDead(false);
                 isRespawning = true;
                 gamePaused = false;  // Unpause the game when respawning
                 respawnNPC();
@@ -60,7 +59,7 @@ int GameEngine::StartGame() {
             }
         }
 
-        if (playerDead) {
+        if (player.getPlayerDead()) {
             // Pause the game and show respawn dialog
             gamePaused = true;  // Set game as paused
 
@@ -93,7 +92,7 @@ int GameEngine::StartGame() {
 
         // Check for collision with KillObstacle
         if (currentRoom->checkKillCollision(player.getBounds())) {
-            playerDead = true;  // Player died
+            player.setPlayerDead(true);  // Player died
             gamePaused = true;  // Pause the game
             continue;  // Skip the rest of the frame
         }
@@ -103,7 +102,6 @@ int GameEngine::StartGame() {
         currentRoom->update(deltaTime, player);
 
         player.draw(window);
-        player.drawInventoryOverlay(window);
 
         // Update logic
         player.update(deltaTime, *currentRoom);
@@ -126,7 +124,6 @@ void GameEngine::respawnNPC() {
         ++it;
     }
 }
-
 
 void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, sf::RectangleShape& lazerGunShape, sf::RectangleShape& shovelShape) {
     // Draw the Lazer Gun shape
@@ -240,26 +237,32 @@ void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<
     if (playerBounds.left + playerBounds.width > 640 && currentRoom == rooms[0]) {  // Room 1 to Room 2
         player.setPosition(0, player.getPosition().y);  // Place player at the left edge of Room 2
         currentRoom = rooms[1];  // Transition to Room 2
+        respawnNPC();
     }
     else if (playerBounds.left < 0 && currentRoom == rooms[1]) {  // Room 2 to Room 1
         player.setPosition(640 - playerBounds.width, player.getPosition().y);  // Place player at right edge of Room 1
         currentRoom = rooms[0];  // Transition to Room 1
+        respawnNPC();
     }
     else if (playerBounds.top < 0 && currentRoom == rooms[0]) {  // Room 1 to Room 3
         player.setPosition(player.getPosition().x, 280);  // Reset position for Room 3
         currentRoom = rooms[2];  // Transition to Room 3
+        respawnNPC();
     }
     else if (playerBounds.top + playerBounds.height > 360 && currentRoom == rooms[2]) {  // Room 3 to Room 1
         player.setPosition(player.getPosition().x, 0);  // Reset position for Room 1
         currentRoom = rooms[0];  // Transition to Room 1
+        respawnNPC();
     }
     else if (playerBounds.left + playerBounds.width > 640 && currentRoom == rooms[1]) {  // Room 2 to Room 4
         player.setPosition(0, player.getPosition().y);  // Place player at the left edge of Room 4
         currentRoom = rooms[3];  // Transition to Room 4
+        respawnNPC();
     }
     else if (playerBounds.left < 0 && currentRoom == rooms[3]) {  // Room 4 to Room 2
         player.setPosition(640 - playerBounds.width, player.getPosition().y);  // Place player at right edge of Room 2
         currentRoom = rooms[1];  // Transition to Room 2
+        respawnNPC();
     }
 }
 

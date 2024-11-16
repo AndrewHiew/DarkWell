@@ -14,6 +14,9 @@ Player::Player(int maxHP)
     facingAngle = 0.0f; // Initial Angle
     isGrounded = true;
     V = nullptr;
+    damageImmunityTimer = 0.0f;
+    isImmune = false;
+    playerDead = false;
 }
 
 Player::~Player() {
@@ -72,6 +75,14 @@ std::string Player::vectorToString(const sf::Vector2f& position) {
 
 // Update method to handle gravity, movement, and collision detection
 void Player::update(float deltaTime, Room& room) {
+    // Apply damage immunity timer
+    if (isImmune) {
+        damageImmunityTimer -= deltaTime;
+        if (damageImmunityTimer <= 0.0f) {
+            isImmune = false; // Reset immunity
+        }
+    }
+
     // Apply gravity only if the player is not grounded
     if (!isGrounded) {
         velocityY += gravity * deltaTime;  // Apply gravity
@@ -137,9 +148,26 @@ void Player::update(float deltaTime, Room& room) {
     }
 }
 
+// Player Take Damage Method
+void Player::takeDamage(int damage) {
+    if (!isImmune) { // Only take damage if not immune
+        currentHP -= damage;
+        if (currentHP <= 0) {
+            currentHP = 0; // Prevent negative health
+            std::cout << "Player has died!" << std::endl;
+            playerDead = true;
+        }
+        isImmune = true; // Activate immunity
+        damageImmunityTimer = 1.0f; // 1-second immunity
+        std::cout << "Player took " << damage << " damage! Current HP: " << currentHP << std::endl;
+    }
+}
+
+
 // Draws the player in the game window
 void Player::draw(sf::RenderWindow& window) {
-    window.draw(playerShape);
+    window.draw(playerShape); // Draw the Player Character
+    drawInventoryOverlay(window); // Draw the Inventory Overlay
 }
 
 // Draws the Inventory Overlay
@@ -162,6 +190,8 @@ void Player::drawInventoryOverlay(sf::RenderWindow& window) {
         }
     }
 }
+
+
 
 // Returns the bounding box of the player for collision detection
 sf::FloatRect Player::getBounds() const {
@@ -220,3 +250,6 @@ void Player::respawn() {
     velocityY = 0.0f;  // Reset vertical velocity
     isGrounded = true;  // Player is grounded
 }
+
+bool Player::getPlayerDead() { return playerDead; }
+void Player::setPlayerDead(bool isDead) { playerDead = isDead; }

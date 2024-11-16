@@ -22,6 +22,9 @@ private:
     float velocityY;
     Inventory inventory;
     int selectedItemIndex;
+    float damageImmunityTimer; // Timer to track damage immunity
+    bool isImmune; // Status to check if player is immune
+    bool playerDead;
 
     bool tabPressed = false;  // State of Tab key
     bool spacePressed = false; // State of Space key
@@ -36,6 +39,10 @@ public:
     // Constructor
     Player(int maxHP);
     ~Player();
+
+    // Getter and setter
+    bool getPlayerDead();
+    void setPlayerDead(bool isDead);
 
     // Player-specific methods
     void handleInput();
@@ -55,5 +62,8 @@ public:
     void useSelectedItem();               // Use selected item
     int getSelectedItemIndex() const;     // Get index of currently selected item
     const Inventory& getInventory() const; // Get inventory (const reference)
+
+    // Player Behaviour Method
+    void takeDamage(int damage);
     void respawn();
 };
