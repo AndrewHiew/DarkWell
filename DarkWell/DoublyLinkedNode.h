@@ -59,6 +59,12 @@ public:
 
     Node* getNext() const { return next; }
     Node* getPrevious() const { return previous; }
+
+    // Set the next node
+    void setNext(Node* newNext) { next = newNext; }
+
+    // Set the previous node
+    void setPrevious(Node* newPrevious) { previous = newPrevious; }
 };
 
 // Initialize the static NIL node

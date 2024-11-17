@@ -11,7 +11,7 @@ class Player;
 
 class Undead : public Character {
 private:
-    sf::RectangleShape undeadShape;  // Shape for the Undead character
+    sf::RectangleShape undeadShape; // Shape for the Undead character
     float speed;  // Speed of movement
     bool isDead;  // Health status
     float gravity;     // Gravity value same as player's

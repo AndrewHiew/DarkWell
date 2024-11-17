@@ -71,6 +71,7 @@ public:
     // Player Behaviour Method
     void takeDamage(int damage);
     void respawn();
+    void pickUpItemObstacle(Room* currentRoom);
 
     // Update all projectiles
     void updateProjectiles(float deltaTime);

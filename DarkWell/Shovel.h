@@ -7,7 +7,7 @@ class ItemVisitor;
 class Shovel : public Item {
 public:
     Shovel() {
-        color = sf::Color(139, 69, 19);  // Brown for Shovel
+        color = sf::Color(139, 69, 19);
     }
 
     std::string getName() const override { return "Shovel"; }

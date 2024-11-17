@@ -154,6 +154,7 @@
     <ClInclude Include="ItemVisitor.h" />
     <ClInclude Include="KillObstacle.h" />
     <ClInclude Include="LazerGun.h" />
+    <ClInclude Include="LifeTotem.h" />
     <ClInclude Include="MovingObstacle.h" />
     <ClInclude Include="NodeIterator.h" />
     <ClInclude Include="List.h" />
@@ -166,11 +167,15 @@
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shovel.h" />
     <ClInclude Include="SinglyLinkedList.h" />
+    <ClInclude Include="Stack.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="Undead.h" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Arial.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="mask.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

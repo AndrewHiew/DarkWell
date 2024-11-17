@@ -145,6 +145,27 @@ void Player::update(float deltaTime, Room& room) {
                 playerShape.setPosition(obstacleBounds.left + obstacleBounds.width, playerShape.getPosition().y);
             }
         }
+
+        // Check for the possibility to pick up an item when adjacent to an ItemObstacle
+        if (ItemObstacle* itemObstacle = dynamic_cast<ItemObstacle*>(obstacle)) {
+            if (playerBounds.intersects(obstacleBounds)) {
+                // Display message or prompt if the player is close enough to an ItemObstacle
+                std::cout << "Press E to pick up: " << itemObstacle->getItem()->getName() << std::endl;
+
+                // Handle the 'E' key press to grab the item
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+                    // Add the item to the player's inventory
+                    this->addItemToInventory(itemObstacle->getItem());
+                    std::cout << "Picked up: " << itemObstacle->getItem()->getName() << std::endl;
+
+                    // Remove the obstacle from the room
+                    room.removeObstacle(*it);
+                    delete itemObstacle; // Delete obstacle to prevent memory leak
+                    break; // Exit loop since the obstacle list has been modified
+                }
+            }
+        }
+
         ++it;
     }
 }
@@ -267,6 +288,23 @@ void Player::respawn() {
     velocityY = 0.0f;  // Reset vertical velocity
     isGrounded = true;  // Player is grounded
 }
+
+void Player::pickUpItemObstacle(Room* currentRoom) {
+    for (auto it = currentRoom->getObstacles().begin(); it != currentRoom->getObstacles().end(); ++it) {
+        ItemObstacle* itemObstacle = dynamic_cast<ItemObstacle*>(*it);
+
+        if (itemObstacle && this->getBounds().intersects(itemObstacle->getBounds())) {
+            // Add the item to the player's inventory
+            this->addItemToInventory(itemObstacle->getItem());
+            std::cout << "Picked up: " << itemObstacle->getItem()->getName() << std::endl;
+
+            // Remove the obstacle from the room without manually deleting it
+            currentRoom->removeObstacle(*it);
+            break; // Exit loop since the obstacle list has been modified
+        }
+    }
+}
+
 
 bool Player::getPlayerDead() { return playerDead; }
 void Player::setPlayerDead(bool isDead) { playerDead = isDead; }

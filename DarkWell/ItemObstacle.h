@@ -1,20 +1,23 @@
 #pragma once
+
 #include "Obstacle.h"
+#include "Item.h"
+#include <SFML/Graphics.hpp>
 #include <string>
 
 class ItemObstacle : public Obstacle {
 private:
-    std::string name;  // The name of the item
+    Item* item;
 
 public:
     // Default constructor
     ItemObstacle();
 
     // Parameterized constructor
-    ItemObstacle(float x, float y, const std::string& itemName);
+    ItemObstacle(float x, float y, Item* aItem);
 
     // Getter for the item's name
-    std::string getName() const;
+    Item* getItem();
 
     // Override the draw method to render the item obstacle (10x10 purple square)
     void draw(sf::RenderWindow& window) const override;

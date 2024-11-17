@@ -43,6 +43,9 @@
     <Filter Include="Source Files\Character">
       <UniqueIdentifier>{2b3ed5b3-42c2-4ce9-9dc7-e7a9e35201fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Stack">
+      <UniqueIdentifier>{23120735-d632-420e-bfe4-cbca433bf3a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -164,10 +167,21 @@
     <ClInclude Include="ItemObstacle.h">
       <Filter>Header Files\Obstacle</Filter>
     </ClInclude>
+    <ClInclude Include="LifeTotem.h">
+      <Filter>Header Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.h">
+      <Filter>Header Files\Stack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Arial.ttf">
       <Filter>Resource Files</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="mask.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 #pragma once
+#include "ItemObstacle.h"
 #include "NormalObstacle.h"
 #include "MovingObstacle.h"
 #include "KillObstacle.h"
@@ -17,6 +18,7 @@ private:
     List<Obstacle*> obstacles;  // List to store pointers to obstacles
     SinglyLinkedList<Character*> characters; // SinglyLinkedList for NPCs like Undead
     string name;
+    bool npcsSpawned;
 
 
 public:
@@ -40,4 +42,7 @@ public:
     void updateProjectile(float deltaTime, Player& player, sf::RenderWindow& window);
     void resetNPC();
     void resetNPCdead();
+    bool areNPCsSpawned() const;
+    void setNPCsSpawned(bool spawned);
+    void removeObstacle(Obstacle* obstacle);
 };

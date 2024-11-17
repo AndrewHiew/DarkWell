@@ -3,7 +3,11 @@
 
 using namespace std;
 
-Room::Room(string _name) { name = _name; }
+Room::Room(string _name) 
+{ 
+   name = _name; 
+   npcsSpawned = false;
+}
 
 Room::Room() {}
 
@@ -82,7 +86,6 @@ void Room::checkPlayerCollisions(Player& player) {
     }
 }
 
-
 bool Room::checkKillCollision(const sf::FloatRect& playerBounds) const {
     auto it = obstacles.getIteratorFromFront();
     while (it != it.end()) {
@@ -104,59 +107,80 @@ void Room::update(float deltaTime, Player& player, sf::RenderWindow& window) {
 
     while (current != nullptr) {
         Undead* undead = dynamic_cast<Undead*>(current->value);
-        if (undead && !undead->getIsDead()) {
-            undead->checkPlayerCollision(player);
+        if (undead && undead->getIsDead()) {
+            // Properly delete character and remove from list
+            if (previous) {
+                previous->next = current->next;
+            }
+            else {
+                characters.setHead(current->next);
+            }
+            delete current->value;
+            delete current;
+            current = previous ? previous->next : characters.getHead();
+        }
+        else {
+            previous = current;
+            current = current->next;
         }
 
-        // Check if the character is dead
-        if (undead && undead->getIsDead()) {
-            // If the character is dead, just don't draw it
-            // No need to remove it from the list
-        }
-        
-        // Move to the next node
-        previous = current;
-        current = current->next;
     }
 }
 
 
 void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& window) {
-    if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
-        player.updateProjectiles(deltaTime);
-        player.drawProjectiles(window);
+    if (!player.getInventory().isEmpty()) {
+        if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
+            player.updateProjectiles(deltaTime);
+            player.drawProjectiles(window);
 
-        // Check for collisions with enemies (NPCs)
-        auto& characters = getCharacters();
-        int projectileCount = player.getProjectiles().size();
+            // Check for collisions with enemies (NPCs)
+            auto& characters = getCharacters();
+            int projectileCount = player.getProjectiles().size();
 
-        // Iterate over projectiles
-        for (int i = 0; i < projectileCount; ++i) {
-            Projectile& projectile = player.getProjectiles().front();
-            sf::FloatRect projectileBounds = projectile.getBounds(); // Assuming Projectile has getBounds
+            // Iterate over projectiles
+            for (int i = 0; i < projectileCount; ++i) {
+                Projectile& projectile = player.getProjectiles().front();
+                sf::FloatRect projectileBounds = projectile.getBounds();
 
-            // Check for collision with each character (enemy)
-            auto it = characters.getIterator();
-            while (it != it.end()) {
-                Character* character = it.getCurrent()->getValue();
-                sf::FloatRect characterBounds = character->getBounds();  // Assuming Character has getBounds
+                // Check for collision with each character (enemy)
+                auto it = characters.getIterator();
+                bool projectileHit = false;
 
-                // If the projectile collides with the enemy
-                if (projectileBounds.intersects(characterBounds)) {
-                    // Apply damage to the enemy (20 damage in this case)
-                    character->takeDamage(20);
-                    std::cout << "Projectile hit enemy! Dealt 20 damage." << std::endl;
-                    std::cout << character->getCurrentHP() << std::endl;
+                while (it != it.end()) {
+                    Character* character = it.getCurrent()->getValue();
 
-                    // Remove the projectile after hitting the enemy
-                    player.getProjectiles().dequeue();
-                    break; // Exit loop after projectile hit
+                    // Check if character is still alive
+                    Undead* undead = dynamic_cast<Undead*>(character);
+                    if (undead && undead->getIsDead()) {
+                        ++it;
+                        continue; // Skip collision check for dead characters
+                    }
+
+                    sf::FloatRect characterBounds = character->getBounds();
+
+                    // If the projectile collides with the enemy
+                    if (projectileBounds.intersects(characterBounds)) {
+                        character->takeDamage(20);
+                        std::cout << "Projectile hit enemy! Dealt 20 damage." << std::endl;
+                        std::cout << "Enemy HP: " << character->getCurrentHP() << std::endl;
+
+                        // Remove the projectile after hitting the enemy
+                        player.getProjectiles().dequeue();
+                        projectileHit = true;
+                        break;
+                    }
+
+                    ++it;
                 }
 
-                ++it;
+                // If the projectile did not hit any enemy, re-enqueue it for the next update
+                if (!projectileHit) {
+                    player.getProjectiles().enqueue(player.getProjectiles().dequeue());
+                }
             }
         }
-    }
+    } 
 }
 
 
@@ -175,6 +199,10 @@ void Room::resetNPC() {
     }
 }
 
+void Room::removeObstacle(Obstacle* obstacle) {
+    obstacles.remove(obstacle);
+}
+
 void Room::resetNPCdead() {
     Node<Character*>* current = characters.getHead();
 
@@ -188,3 +216,6 @@ void Room::resetNPCdead() {
         current = current->next;  // Move to the next character
     }
 }
+
+bool Room::areNPCsSpawned() const { return npcsSpawned; }
+void Room::setNPCsSpawned(bool spawned) { npcsSpawned = spawned; }

@@ -24,8 +24,8 @@ int GameEngine::StartGame() {
     player.setPosition(50, 318);  // Initial position in Room 1
 
     // Add items to player's inventory`
-    player.addItemToInventory(new LazerGun());
-    player.addItemToInventory(new Shovel());
+    //player.addItemToInventory(new LazerGun());
+    //player.addItemToInventory(new Shovel());
 
     // Load and start playing background music
     if (!backgroundMusic.openFromFile("lacrimosa.mp3")) {
@@ -112,6 +112,7 @@ int GameEngine::StartGame() {
         }
 
         window.clear(sf::Color::Black);
+        spawnNPC(currentRoom);
         currentRoom->draw(window);
         currentRoom->update(deltaTime, player, window);
 
@@ -128,21 +129,35 @@ int GameEngine::StartGame() {
     return 0;
 }
 
+// Method to spawn NPCs
+void GameEngine::spawnNPC(Room* currentRoom) {
+    // Check if NPCs are already spawned
+    if (currentRoom->getName() == "Room 2" && !currentRoom->areNPCsSpawned()) {
+        Undead* undead1 = new Undead(100, 500, 200);
+        currentRoom->getCharacters().pushBack(undead1);
+
+        // Set the flag to indicate NPCs have been spawned
+        currentRoom->setNPCsSpawned(true);
+    }
+}
+
 // Method to respawn NPCs
 void GameEngine::respawnNPC() {
     typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
     while (it != it.end()) {
         Room* room = it.getCurrent()->getValue();
-        room->resetNPC();
+        room->resetNPC();  // Reset NPCs
         ++it;
     }
 }
 
+// Method to respawn the NPCs when player dies.
 void GameEngine::respawnNPCdead() {
     typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
     while (it != it.end()) {
         Room* room = it.getCurrent()->getValue();
         room->resetNPCdead();
+        room->setNPCsSpawned(false);  // Reset spawn flag
         ++it;
     }
 }
@@ -171,10 +186,9 @@ void GameEngine::drawInventoryOverlay(sf::RenderWindow& window, Player& player, 
 // Methods to initialize Rooms 
 Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
-    Undead* undead1 = new Undead(100, 500, 200);
-    Undead* undead2 = new Undead(100, 530, 68);
 
-    room1->addObstacle(new ItemObstacle(150, 180, "Lazer Gun")); // The LazerGun Object
+    room1->addObstacle(new ItemObstacle(150, 180, new LazerGun())); // The LazerGun Object
+    room1->addObstacle(new ItemObstacle(200, 125, new Shovel()));
 
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
@@ -191,12 +205,11 @@ Room* GameEngine::initializeRoom1() {
 
     room1->addObstacle(new MovingObstacle(300, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
     room1->addObstacle(new MovingObstacle(0, 150, 80, 20, 100.0f, 50.0f, 150.0f)); // Add moving obstacle
+
     room1->addObstacle(new KillObstacle(200, 300, 20, 20)); // Add KillObstacle
     room1->addObstacle(new KillObstacle(400, 340, 20, 20)); // Add KillObstacle
     room1->addObstacle(new KillObstacle(0, 360, 640, 20)); // Add KillObstacle
 
-    room1->getCharacters().pushBack(undead1);
-    room1->getCharacters().pushBack(undead2);
     return room1;
 }
 

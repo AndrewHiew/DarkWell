@@ -66,6 +66,25 @@ public:
         return head;
     }
 
+    // Method to set a new head of the list
+    void setHead(Node<T>* newHead) {
+        head = newHead;
+        // If we set a new head, we need to update the size if the new head is not null
+        if (newHead == nullptr) {
+            size = 0;
+        }
+        else {
+            // Recalculate size
+            int newSize = 0;
+            Node<T>* current = newHead;
+            while (current != nullptr) {
+                newSize++;
+                current = current->next;
+            }
+            size = newSize;
+        }
+    }
+
     // Method to return an iterator pointing to the start of the list
     NodeIterator<T> getIterator() {
         return NodeIterator<T>(head);

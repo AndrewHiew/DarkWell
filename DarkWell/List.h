@@ -113,6 +113,68 @@ public:
         return current->getValue();  // Return the reference to the value at the given index
     }
 
+    // Returns an iterator to the first element
+    Iterator begin() const {
+        return getIteratorFromFront();
+    }
+
+    // Returns an iterator to the end (past-the-last element, represents a nil node)
+    Iterator end() const {
+        return Iterator(&(Node::NIL));
+    }
+
+    // Remove an element by value
+    bool remove(const T& value) {
+        if (isEmpty()) return false;
+
+        Iterator it = getIteratorFromFront();
+
+        // Iterate through the list
+        while (it != end()) {
+            Node* current = it.getCurrent();
+            if (current->getValue() == value) {
+                // Case 1: It's the first element
+                if (current == first) {
+                    first = first->getNext();
+                    if (first != &(Node::NIL)) {
+                        first->setPrevious(&(Node::NIL)); // Update the previous pointer of the new first node
+                    }
+                    else {
+                        last = &(Node::NIL); // The list is now empty
+                    }
+                }
+                // Case 2: It's the last element
+                else if (current == last) {
+                    last = last->getPrevious();
+                    if (last != &(Node::NIL)) {
+                        last->setNext(&(Node::NIL)); // Update the next pointer of the new last node
+                    }
+                    else {
+                        first = &(Node::NIL); // The list is now empty
+                    }
+                }
+                // Case 3: It's a middle node
+                else {
+                    Node* prevNode = current->getPrevious();
+                    Node* nextNode = current->getNext();
+
+                    prevNode->setNext(nextNode);
+                    if (nextNode != &(Node::NIL)) {
+                        nextNode->setPrevious(prevNode);
+                    }
+                }
+
+                // Safely delete the node
+                delete current; // Free the node
+                --count;
+                return true;
+            }
+            ++it;
+        }
+        return false; // Value not found
+    }
+
+
     // Helper Functions
     bool isEmpty() const { return count == 0; }
     int size() const { return count; }
