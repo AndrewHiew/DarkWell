@@ -90,6 +90,9 @@
     <ClCompile Include="ItemObstacle.cpp">
       <Filter>Source Files\Obstacle</Filter>
     </ClCompile>
+    <ClCompile Include="Juggernaut.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="Stack.h">
       <Filter>Header Files\Stack</Filter>
+    </ClInclude>
+    <ClInclude Include="Juggernaut.h">
+      <Filter>Header Files\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

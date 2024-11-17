@@ -174,11 +174,23 @@ void Player::update(float deltaTime, Room& room) {
 void Player::takeDamage(int damage) {
     if (!isImmune) { // Only take damage if not immune
         currentHP -= damage;
+
         if (currentHP <= 0) {
+            // Check Inventory for TOTEM
+            if (inventory.findTotem()) {
+                cout << "Totem Used" << endl;
+                currentHP = 20;
+                isImmune = true; // Activate immunity
+                damageImmunityTimer = 1.0f; // 1-second immunity
+                
+                return;
+            }
+
             currentHP = 0; // Prevent negative health
             std::cout << "Player has died!" << std::endl;
             playerDead = true;
         }
+
         isImmune = true; // Activate immunity
         damageImmunityTimer = 1.0f; // 1-second immunity
         std::cout << "Player took " << damage << " damage! Current HP: " << currentHP << std::endl;

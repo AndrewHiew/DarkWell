@@ -36,12 +36,16 @@ void Room::draw(sf::RenderWindow& window) {
         ++it;
     }
 
-    // Draw characters (NPCs like Undead)
+    // Draw characters (NPCs)
     Node<Character*>* current = characters.getHead();
     while (current != nullptr) {
         Undead* undead = dynamic_cast<Undead*>(current->value);
+        Juggernaut* boss = dynamic_cast<Juggernaut*>(current->value);
         if (undead && !undead->getIsDead()) {
             undead->draw(window);
+        }
+        if (boss && !boss->getIsDead()) {
+            boss->draw(window);
         }
         current = current->next;
     }
@@ -61,6 +65,8 @@ void Room::checkPlayerCollisions(Player& player) {
     Node<Character*>* current = characters.getHead();
     while (current != nullptr) {
         Undead* undead = dynamic_cast<Undead*>(current->value);
+        Juggernaut* boss = dynamic_cast<Juggernaut*>(current->value);
+
         if (undead && !undead->getIsDead()) {
             undead->update(0.016f, getObstacles(), player.getPosition());
 
@@ -78,6 +84,28 @@ void Room::checkPlayerCollisions(Player& player) {
                 }
                 else if (playerBounds.top + playerBounds.height > undeadBounds.top + undeadBounds.height) {
                     player.setPosition(player.getPosition().x, undeadBounds.top + undeadBounds.height);
+                }
+                return;  // Stop further checks after resolving one collision
+            }
+        }
+
+        else if (boss && !boss->getIsDead()) {
+            boss->update(0.016f, getObstacles(), player.getPosition());
+
+            sf::FloatRect bossBounds = boss->getBounds();
+            if (playerBounds.intersects(bossBounds)) {
+                // Resolve player collision with the Undead
+                if (playerBounds.left < bossBounds.left) {
+                    player.setPosition(bossBounds.left - playerBounds.width, player.getPosition().y);
+                }
+                else if (playerBounds.left + playerBounds.width > bossBounds.left + bossBounds.width) {
+                    player.setPosition(bossBounds.left + bossBounds.width, player.getPosition().y);
+                }
+                else if (playerBounds.top < bossBounds.top) {
+                    player.setPosition(player.getPosition().x, bossBounds.top - playerBounds.height);
+                }
+                else if (playerBounds.top + playerBounds.height > bossBounds.top + bossBounds.height) {
+                    player.setPosition(player.getPosition().x, bossBounds.top + bossBounds.height);
                 }
                 return;  // Stop further checks after resolving one collision
             }
@@ -106,24 +134,51 @@ void Room::update(float deltaTime, Player& player, sf::RenderWindow& window) {
     Node<Character*>* previous = nullptr;
 
     while (current != nullptr) {
-        Undead* undead = dynamic_cast<Undead*>(current->value);
-        if (undead && undead->getIsDead()) {
-            // Properly delete character and remove from list
-            if (previous) {
-                previous->next = current->next;
+        // Undead Player Collision Check
+        if (dynamic_cast<Undead*>(current->value) != nullptr) {
+            Undead* undead = dynamic_cast<Undead*>(current->value);
+            if (undead && undead->getIsDead()) {
+
+                // Properly delete character and remove from list
+                if (previous) {
+                    previous->next = current->next;
+                }
+                else {
+                    characters.setHead(current->next);
+                }
+                delete current->value;
+                delete current;
+                current = previous ? previous->next : characters.getHead();
             }
             else {
-                characters.setHead(current->next);
+                undead->checkPlayerCollision(player);
+                previous = current;
+                current = current->next;
             }
-            delete current->value;
-            delete current;
-            current = previous ? previous->next : characters.getHead();
         }
-        else {
-            previous = current;
-            current = current->next;
-        }
+        
+        // Juggernaut Player Collision Check
+        else if (dynamic_cast<Juggernaut*>(current->value) != nullptr) {
+            Juggernaut* boss = dynamic_cast<Juggernaut*>(current->value);
+            if (boss && boss->getIsDead()) {
 
+                // Properly delete character and remove from list
+                if (previous) {
+                    previous->next = current->next;
+                }
+                else {
+                    characters.setHead(current->next);
+                }
+                delete current->value;
+                delete current;
+                current = previous ? previous->next : characters.getHead();
+            }
+            else {
+                boss->checkPlayerCollision(player);
+                previous = current;
+                current = current->next;
+            }
+        }
     }
 }
 

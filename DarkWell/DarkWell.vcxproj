@@ -132,6 +132,7 @@
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="ItemObstacle.cpp" />
     <ClCompile Include="ItemVisitor.cpp" />
+    <ClCompile Include="Juggernaut.cpp" />
     <ClCompile Include="KillObstacle.cpp" />
     <ClCompile Include="LazerGun.cpp" />
     <ClCompile Include="main.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemObstacle.h" />
     <ClInclude Include="ItemVisitor.h" />
+    <ClInclude Include="Juggernaut.h" />
     <ClInclude Include="KillObstacle.h" />
     <ClInclude Include="LazerGun.h" />
     <ClInclude Include="LifeTotem.h" />

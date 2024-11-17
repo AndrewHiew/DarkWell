@@ -9,6 +9,7 @@ using namespace std;
 class Item;
 class LazerGun;
 class Shovel;
+class LifeTotem;
 class Player;
 
 class ItemVisitor
@@ -17,6 +18,7 @@ public:
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
 	virtual void Visit(Shovel& shovel);
+	virtual void Visit(LifeTotem& aLifeTotem);
 };
 
 class ItemVisitorUse : public ItemVisitor
@@ -32,6 +34,7 @@ public:
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
 	virtual void Visit(Shovel& shovel);
+	virtual void Visit(LifeTotem& aLifeTotem);
 };
 
 class ItemVisitorPrint
@@ -40,4 +43,5 @@ public:
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
 	virtual void Visit(Shovel& shovel);
+	virtual void Visit(LifeTotem& aLifeTotem);
 };

@@ -8,6 +8,7 @@
 #include "LazerGun.h"
 #include "Shovel.h"
 #include "ItemObstacle.h"
+#include "Juggernaut.h"
 
 // Default constructor
 GameEngine::GameEngine() : gamePaused(false) {}  // Initialize gamePaused flag
@@ -139,6 +140,15 @@ void GameEngine::spawnNPC(Room* currentRoom) {
         // Set the flag to indicate NPCs have been spawned
         currentRoom->setNPCsSpawned(true);
     }
+
+    if (currentRoom->getName() == "Room 3" && !currentRoom->areNPCsSpawned()) {
+        
+        Juggernaut* boss = new Juggernaut(500, 500, 200);
+        currentRoom->getCharacters().pushBack(boss);
+
+        // Set the flag to indicate NPCs have been spawned
+        currentRoom->setNPCsSpawned(true);
+    }
 }
 
 // Method to respawn NPCs
@@ -188,7 +198,7 @@ Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
 
     room1->addObstacle(new ItemObstacle(150, 180, new LazerGun())); // The LazerGun Object
-    room1->addObstacle(new ItemObstacle(200, 125, new Shovel()));
+    room1->addObstacle(new ItemObstacle(200, 125, new LifeTotem()));
 
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle

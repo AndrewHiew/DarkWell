@@ -1,5 +1,6 @@
 #pragma once
 #include "SinglyLinkedList.h"  // Ensure to include the correct header for SinglyLinkedList
+#include "LifeTotem.h"
 #include "Item.h"
 
 class Inventory {
@@ -41,6 +42,16 @@ public:
             current = current->next;
         }
         return current->value;  // Return the item pointer
+    }
+
+    bool findTotem() {
+        for (int i = 0; i < items.getSize(); ++i) {
+            if (dynamic_cast<LifeTotem*>(items[i]) != nullptr) {
+                removeItem(i); // Remove the LifeTotem from the Inventory
+                return true;
+            }
+        }
+        return false;
     }
 
     int getSize() const { return items.getSize(); }

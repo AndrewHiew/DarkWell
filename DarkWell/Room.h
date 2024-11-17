@@ -6,6 +6,7 @@
 #include "List.h"
 #include "Player.h"
 #include "Undead.h"
+#include "Juggernaut.h"
 #include "SinglyLinkedList.h"
 #include <SFML/Graphics.hpp>
 
