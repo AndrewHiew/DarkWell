@@ -18,6 +18,7 @@ Player::Player(int maxHP)
     isImmune = false;
     playerDead = false;
     projectiles = Queue<Projectile>(5);
+    experience = 5;
 }
 
 Player::~Player() {
@@ -75,7 +76,7 @@ std::string Player::vectorToString(const sf::Vector2f& position) {
 }
 
 // Update method to handle gravity, movement, and collision detection
-void Player::update(float deltaTime, Room& room) {
+void Player::update(float deltaTime, Room& room, sf::RenderWindow& window) {
     // Apply damage immunity timer
     if (isImmune) {
         damageImmunityTimer -= deltaTime;
@@ -168,6 +169,8 @@ void Player::update(float deltaTime, Room& room) {
 
         ++it;
     }
+
+    draw(window);
 }
 
 // Player Take Damage Method
@@ -202,6 +205,8 @@ void Player::takeDamage(int damage) {
 void Player::draw(sf::RenderWindow& window) {
     window.draw(playerShape); // Draw the Player Character
     drawInventoryOverlay(window); // Draw the Inventory Overlay
+    drawHealthBar(window); // Draw the healthbar
+    cout << experience << endl;
 }
 
 // Draws the Inventory Overlay
@@ -210,20 +215,54 @@ void Player::drawInventoryOverlay(sf::RenderWindow& window) {
     float spacing = 10.0f;  // Spacing between items
 
     for (int i = 0; i < inventory.getSize(); ++i) {
+        Item* currentItem = inventory.getItem(i);
+
+        // Explicit nullptr check
+        if (currentItem == nullptr) {
+            std::cout << "Item is nullptr at index " << i << std::endl;
+            continue;
+        }
+
         sf::RectangleShape itemShape(sf::Vector2f(itemSize, itemSize));
-        itemShape.setFillColor(inventory.getItem(i)->getColor());  // Use color from item
+        itemShape.setFillColor(currentItem->getColor());
 
-        itemShape.setPosition(10 + i * (itemSize + spacing), 10); // Position each item
-        window.draw(itemShape); // Draw item shape
+        itemShape.setPosition(10 + i * (itemSize + spacing), 10);
+        window.draw(itemShape);
 
-        // Highlight the selected item
         if (i == getSelectedItemIndex()) {
             itemShape.setOutlineThickness(3);
-            itemShape.setOutlineColor(sf::Color::Yellow);  // Highlight color for selected item
-            window.draw(itemShape); // Draw highlighted item shape
+            itemShape.setOutlineColor(sf::Color::Yellow);
+            window.draw(itemShape);
         }
     }
 }
+
+// Draws the Health Bar
+void Player::drawHealthBar(sf::RenderWindow& window) {
+    float heartSize = 20.0f;      // Size of each heart
+    float spacing = 5.0f;         // Spacing between hearts
+    float startX = 10.0f;         // Starting X position for the hearts
+    float startY = 50.0f;         // Y position right under the inventory overlay
+
+    // Calculate the number of full hearts based on current health
+    int fullHearts = currentHP / 20;  // 20 health per heart
+
+    // Draw each heart
+    for (int i = 0; i < 3; ++i) {  // Max 3 hearts, since max health is 60
+        sf::RectangleShape heartShape(sf::Vector2f(heartSize, heartSize));
+        heartShape.setPosition(startX + i * (heartSize + spacing), startY);
+
+        if (i < fullHearts) {
+            heartShape.setFillColor(sf::Color::Red);  // Full heart
+        }
+        else {
+            heartShape.setFillColor(sf::Color(100, 0, 0));  // Dark red for empty heart
+        }
+
+        window.draw(heartShape);
+    }
+}
+
 
 // Returns the bounding box of the player for collision detection
 sf::FloatRect Player::getBounds() const {
@@ -317,7 +356,7 @@ void Player::pickUpItemObstacle(Room* currentRoom) {
     }
 }
 
-
+void Player::gainExperience() { experience += 1; }
 bool Player::getPlayerDead() { return playerDead; }
 void Player::setPlayerDead(bool isDead) { playerDead = isDead; }
 Queue<Projectile>& Player::getProjectiles() { return projectiles; }

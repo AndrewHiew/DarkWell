@@ -46,6 +46,9 @@
     <Filter Include="Header Files\Stack">
       <UniqueIdentifier>{23120735-d632-420e-bfe4-cbca433bf3a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SkillTree">
+      <UniqueIdentifier>{26f7536e-0afd-4bd3-b44d-baad2da84e55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -92,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="Juggernaut.cpp">
       <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="HealingObstacle.cpp">
+      <Filter>Source Files\Obstacle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +184,15 @@
     </ClInclude>
     <ClInclude Include="Juggernaut.h">
       <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="HealingObstacle.h">
+      <Filter>Header Files\Obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillNode.h">
+      <Filter>Header Files\SkillTree</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillTree.h">
+      <Filter>Header Files\SkillTree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

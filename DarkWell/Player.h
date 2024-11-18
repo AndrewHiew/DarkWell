@@ -22,6 +22,8 @@ private:
     bool isGrounded;  // New boolean variable
     float velocityY;
     Inventory inventory;
+
+    int experience;
     int selectedItemIndex;
     float damageImmunityTimer; // Timer to track damage immunity
     bool isImmune; // Status to check if player is immune
@@ -51,9 +53,10 @@ public:
 
     // Player-specific methods
     void handleInput();
-    void update(float deltaTime, Room& room);  // Update with room collision handling
+    void update(float deltaTime, Room& room, sf::RenderWindow& window);  // Update with room collision handling
     void drawInventoryOverlay(sf::RenderWindow& window);
     void draw(sf::RenderWindow& window);
+    void gainExperience();
 
     // Position and movement-related methods
     sf::FloatRect getBounds() const;  // Get bounding box for collision
@@ -76,5 +79,5 @@ public:
     // Update all projectiles
     void updateProjectiles(float deltaTime);
     void drawProjectiles(sf::RenderWindow& window);
-
+    void drawHealthBar(sf::RenderWindow& window);
 };

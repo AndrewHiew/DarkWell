@@ -9,6 +9,7 @@
 #include "Shovel.h"
 #include "ItemObstacle.h"
 #include "Juggernaut.h"
+#include "HealingObstacle.h"
 
 // Default constructor
 GameEngine::GameEngine() : gamePaused(false) {}  // Initialize gamePaused flag
@@ -117,13 +118,11 @@ int GameEngine::StartGame() {
         currentRoom->draw(window);
         currentRoom->update(deltaTime, player, window);
 
-        player.draw(window);
 
-        // Update logic
-        player.update(deltaTime, *currentRoom);
+        player.update(deltaTime, *currentRoom, window);
+
         currentRoom->updateProjectile(deltaTime, player, window);
         
-
         window.display();
     }
 
@@ -166,8 +165,10 @@ void GameEngine::respawnNPCdead() {
     typename List<Room*>::Iterator it = rooms.getIteratorFromFront();
     while (it != it.end()) {
         Room* room = it.getCurrent()->getValue();
-        room->resetNPCdead();
-        room->setNPCsSpawned(false);  // Reset spawn flag
+        if (room->getCharacters().isEmpty()) {
+            room->resetNPCdead();
+            room->setNPCsSpawned(false);  // Reset spawn flag
+        }
         ++it;
     }
 }
@@ -198,7 +199,9 @@ Room* GameEngine::initializeRoom1() {
     Room* room1 = new Room("Room 1");
 
     room1->addObstacle(new ItemObstacle(150, 180, new LazerGun())); // The LazerGun Object
-    room1->addObstacle(new ItemObstacle(200, 125, new LifeTotem()));
+    room1->addObstacle(new ItemObstacle(300, 125, new LifeTotem()));
+
+    room1->addObstacle(new HealingObstacle(200, 125, 10, 10));
 
     room1->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
     room1->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle

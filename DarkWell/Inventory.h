@@ -18,21 +18,25 @@ public:
     void removeItem(int index) {
         if (index < 0 || index >= items.getSize()) throw std::out_of_range("Invalid index");
 
-        // This part can be tricky since removing from a singly linked list requires traversal
         if (index == 0) {
             items.popFront();
         }
         else {
             Node<Item*>* current = items.getHead();
             for (int i = 0; i < index - 1; ++i) {
-                current = current->next;  // Traverse to the previous node
+                current = current->next;
             }
-            Node<Item*>* temp = current->next;  // Node to remove
+            Node<Item*>* temp = current->next; // Node to remove
             current->next = current->next->next; // Bypass the removed node
-            delete temp->value; // Free the memory for the item
-            delete temp; // Free the node memory
+
+            delete temp->value;  // Free the memory for the item
+            temp->value = nullptr; // Mark value as nullptr (important)
+            temp->next = nullptr; // Mark next as nullptr
+            delete temp;  // Free the node memory
         }
+        items.setHead(items.getHead()); // Update size correctly
     }
+
 
     Item* getItem(int index) const {
         if (index < 0 || index >= items.getSize()) throw std::out_of_range("Invalid index");
@@ -41,18 +45,31 @@ public:
         for (int i = 0; i < index; ++i) {
             current = current->next;
         }
-        return current->value;  // Return the item pointer
+
+        // Return nullptr if the value was marked as such
+        if (current->value == nullptr) return nullptr;
+
+        return current->value;
     }
 
+
     bool findTotem() {
-        for (int i = 0; i < items.getSize(); ++i) {
-            if (dynamic_cast<LifeTotem*>(items[i]) != nullptr) {
-                removeItem(i); // Remove the LifeTotem from the Inventory
+        auto it = items.getHead(); // Using iterator to avoid index access issues
+        int index = 0;
+
+        while (it != nullptr) {
+            if (dynamic_cast<LifeTotem*>(it->value) != nullptr) {
+                // Remove and delete immediately
+                removeItem(index);
                 return true;
             }
+            it = it->next;
+            index++;
         }
+
         return false;
     }
+
 
     int getSize() const { return items.getSize(); }
 

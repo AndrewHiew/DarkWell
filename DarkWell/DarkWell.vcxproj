@@ -130,6 +130,7 @@
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="HealingObstacle.cpp" />
     <ClCompile Include="ItemObstacle.cpp" />
     <ClCompile Include="ItemVisitor.cpp" />
     <ClCompile Include="Juggernaut.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="DoublyLinkedNodeIterator.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="HealingObstacle.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemObstacle.h" />
@@ -169,6 +171,8 @@
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shovel.h" />
     <ClInclude Include="SinglyLinkedList.h" />
+    <ClInclude Include="SkillNode.h" />
+    <ClInclude Include="SkillTree.h" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="Undead.h" />

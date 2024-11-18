@@ -1,4 +1,5 @@
 #include "Room.h"
+#include "HealingObstacle.h"
 #include <iostream>
 
 using namespace std;
@@ -61,17 +62,22 @@ const List<Obstacle*>& Room::getObstacles() const {
 void Room::checkPlayerCollisions(Player& player) {
     sf::FloatRect playerBounds = player.getBounds();
 
-    // Check for collisions with each Undead
+    // Check collision with NPCs (Undead, Juggernaut)
     Node<Character*>* current = characters.getHead();
     while (current != nullptr) {
         Undead* undead = dynamic_cast<Undead*>(current->value);
         Juggernaut* boss = dynamic_cast<Juggernaut*>(current->value);
 
+        // Handle collision with Undead
         if (undead && !undead->getIsDead()) {
             undead->update(0.016f, getObstacles(), player.getPosition());
-
             sf::FloatRect undeadBounds = undead->getBounds();
+
+            // If player intersects with Undead
             if (playerBounds.intersects(undeadBounds)) {
+                // Apply damage to the player
+                player.takeDamage(20);
+
                 // Resolve player collision with the Undead
                 if (playerBounds.left < undeadBounds.left) {
                     player.setPosition(undeadBounds.left - playerBounds.width, player.getPosition().y);
@@ -85,16 +91,21 @@ void Room::checkPlayerCollisions(Player& player) {
                 else if (playerBounds.top + playerBounds.height > undeadBounds.top + undeadBounds.height) {
                     player.setPosition(player.getPosition().x, undeadBounds.top + undeadBounds.height);
                 }
-                return;  // Stop further checks after resolving one collision
+                return;
             }
         }
 
+        // Handle collision with Juggernaut (boss)
         else if (boss && !boss->getIsDead()) {
             boss->update(0.016f, getObstacles(), player.getPosition());
-
             sf::FloatRect bossBounds = boss->getBounds();
+
+            // If player intersects with Juggernaut
             if (playerBounds.intersects(bossBounds)) {
-                // Resolve player collision with the Undead
+                // Apply damage to the player
+                player.takeDamage(40);
+
+                // Resolve player collision with the Juggernaut
                 if (playerBounds.left < bossBounds.left) {
                     player.setPosition(bossBounds.left - playerBounds.width, player.getPosition().y);
                 }
@@ -107,12 +118,34 @@ void Room::checkPlayerCollisions(Player& player) {
                 else if (playerBounds.top + playerBounds.height > bossBounds.top + bossBounds.height) {
                     player.setPosition(player.getPosition().x, bossBounds.top + bossBounds.height);
                 }
-                return;  // Stop further checks after resolving one collision
+                return;
             }
         }
         current = current->next;
     }
+
+    // Check collision with obstacles, specifically HealingObstacle
+    auto it = obstacles.getIteratorFromFront();
+    while (it != it.end()) {
+        Obstacle* obstacle = it.getCurrent()->getValue();
+        sf::FloatRect obstacleBounds = obstacle->getBounds();
+
+        if (playerBounds.intersects(obstacleBounds)) {
+            if (HealingObstacle* healingObstacle = dynamic_cast<HealingObstacle*>(obstacle)) {
+                healingObstacle->onCollision(player);
+                std::cout << "Player touched a HealingObstacle!" << std::endl;
+
+                // Optionally remove the obstacle after healing
+                removeObstacle(healingObstacle);
+                delete healingObstacle;
+                break;
+            }
+        }
+        ++it;
+    }
 }
+
+
 
 bool Room::checkKillCollision(const sf::FloatRect& playerBounds) const {
     auto it = obstacles.getIteratorFromFront();
@@ -220,6 +253,15 @@ void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& w
                         std::cout << "Projectile hit enemy! Dealt 20 damage." << std::endl;
                         std::cout << "Enemy HP: " << character->getCurrentHP() << std::endl;
 
+                        // Check if the enemy is now dead after taking damage
+                        if (character->getCurrentHP() <= 0) {
+                            undead = dynamic_cast<Undead*>(character);
+                            if (undead && undead->getIsDead()) {
+                                std::cout << "Enemy killed! Player gains 1 experience point." << std::endl;
+                                player.gainExperience(); // Increase the player's experience
+                            }
+                        }
+
                         // Remove the projectile after hitting the enemy
                         player.getProjectiles().dequeue();
                         projectileHit = true;
@@ -235,8 +277,9 @@ void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& w
                 }
             }
         }
-    } 
+    }
 }
+
 
 
 // Method to reset all NPC
@@ -247,8 +290,12 @@ void Room::resetNPC() {
     while (current != nullptr) {
         // Check if the character is of type Undead
         Undead* undead = dynamic_cast<Undead*>(current->value);
+        Juggernaut* boss = dynamic_cast<Juggernaut*>(current->value);
         if (undead) {
-            undead->resetNPC();  // Call the resetNPC method of the Undead class
+            undead->resetNPC();
+        }
+        else if (boss) {
+            boss->resetNPC();
         }
         current = current->next;  // Move to the next character
     }
@@ -265,8 +312,12 @@ void Room::resetNPCdead() {
     while (current != nullptr) {
         // Check if the character is of type Undead
         Undead* undead = dynamic_cast<Undead*>(current->value);
+        Juggernaut* boss = dynamic_cast<Juggernaut*>(current->value);
         if (undead) {
-            undead->resetNPCdead();  // Call the resetNPC method of the Undead class
+            undead->resetNPCdead(); 
+        }
+        else if (boss) {
+            boss->resetNPCdead();
         }
         current = current->next;  // Move to the next character
     }
