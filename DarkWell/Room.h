@@ -17,10 +17,11 @@ class Player;
 class Room {
 private:
     List<Obstacle*> obstacles;  // List to store pointers to obstacles
+    List<Obstacle*> tempObstacle;
     SinglyLinkedList<Character*> characters; // SinglyLinkedList for NPCs like Undead
     string name;
     bool npcsSpawned;
-
+    bool tempStatus;
 
 public:
     // Constructors
@@ -33,6 +34,8 @@ public:
 
     void addObstacle(Obstacle* obstacle);  // Add obstacle to the room
     const List<Obstacle*>& getObstacles() const;  // Return the list of obstacle pointers
+    void addTempObstacle(Obstacle* obstacle);  // Add obstacle to the room
+    const List<Obstacle*>& getTempObstacles() const;  // Return the list of obstacle pointers
 
     SinglyLinkedList<Character*>& getCharacters(); // Return the list of character pointers
     void checkPlayerCollisions(Player& player);
@@ -46,4 +49,6 @@ public:
     bool areNPCsSpawned() const;
     void setNPCsSpawned(bool spawned);
     void removeObstacle(Obstacle* obstacle);
+    bool getTempStatus();
+    void setTempStatus(bool status);
 };

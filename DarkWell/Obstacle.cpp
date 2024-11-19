@@ -7,7 +7,9 @@ Obstacle::Obstacle() {
 }
 
 // Parameterized constructor
-Obstacle::Obstacle(float x, float y, float width, float height) {
+Obstacle::Obstacle(float x, float y, float aWidth, float aHeight) {
+    width = aWidth;
+    height = aHeight;
     shape.setSize(sf::Vector2f(width, height));
     shape.setPosition(x, y);
     shape.setFillColor(sf::Color::Red); // Default color for obstacles

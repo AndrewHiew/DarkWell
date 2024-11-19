@@ -8,6 +8,7 @@ Room::Room(string _name)
 { 
    name = _name; 
    npcsSpawned = false;
+   tempStatus = false;
 }
 
 Room::Room() {}
@@ -25,16 +26,66 @@ void Room::addObstacle(Obstacle* obstacle) {
     obstacles.pushBack(obstacle);  // Store the pointer in the list
 }
 
+const List<Obstacle*>& Room::getObstacles() const {
+    return obstacles;  // Return the list of pointers to obstacles
+}
+
+void Room::addTempObstacle(Obstacle* obstacle) {
+    tempObstacle.pushBack(obstacle);
+}
+
+const List<Obstacle*>& Room::getTempObstacles() const {
+    return tempObstacle;
+}
+
 SinglyLinkedList<Character*>& Room::getCharacters() {
     return characters;
 }
 
+bool Room::getTempStatus() { return tempStatus; }
+void Room::setTempStatus(bool status) { tempStatus = status; }
+
 // Draw all obstacles in the room
 void Room::draw(sf::RenderWindow& window) {
+    static sf::Texture backgroundTexture;
+    static sf::Sprite backgroundSprite;
+
+    // Load the background texture only once
+    static bool isLoaded = false;
+    if (!isLoaded) {
+        if (!backgroundTexture.loadFromFile("room-1.png")) {
+            std::cerr << "Error: Failed to load room-1.png!" << std::endl;
+            return;
+        }
+        backgroundSprite.setTexture(backgroundTexture);
+        isLoaded = true;
+    }
+
+    // Draw the background
+    window.draw(backgroundSprite);
+
+    // Draw obstacles
     auto it = obstacles.getIteratorFromFront();
     while (it != it.end()) {
         it.getCurrent()->getValue()->draw(window);
         ++it;
+    }
+
+    if (!tempStatus) {
+        // Draw temp obstacles
+        auto it = tempObstacle.getIteratorFromFront();
+        while (it != it.end()) {
+            it.getCurrent()->getValue()->draw(window);
+            ++it;
+        }
+    }
+    else {
+        // Safely delete all temp obstacles
+        auto it = tempObstacle.getIteratorFromFront();
+        while (it != it.end()) {
+            delete it.getCurrent()->getValue(); // Free the memory for each obstacle
+            it = tempObstacle.erase(it); // Remove the node from the list
+        }
     }
 
     // Draw characters (NPCs)
@@ -52,12 +103,9 @@ void Room::draw(sf::RenderWindow& window) {
     }
 }
 
+
 string Room::getName() { return name; }
 
-// Get the list of obstacles
-const List<Obstacle*>& Room::getObstacles() const {
-    return obstacles;  // Return the list of pointers to obstacles
-}
 
 void Room::checkPlayerCollisions(Player& player) {
     sf::FloatRect playerBounds = player.getBounds();
@@ -215,12 +263,16 @@ void Room::update(float deltaTime, Player& player, sf::RenderWindow& window) {
     }
 }
 
-
+// Method to updates the projectile, and also adding player XP upon killing enemies.
 void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& window) {
     if (!player.getInventory().isEmpty()) {
+
+        player.updateProjectiles(deltaTime);
+        player.drawProjectiles(window);
+
+        // Check if the selected item is a LazerGun
         if (LazerGun* lazerGun = dynamic_cast<LazerGun*>(player.getInventory().getItem(player.getSelectedItemIndex()))) {
-            player.updateProjectiles(deltaTime);
-            player.drawProjectiles(window);
+
 
             // Check for collisions with enemies (NPCs)
             auto& characters = getCharacters();
@@ -231,38 +283,44 @@ void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& w
                 Projectile& projectile = player.getProjectiles().front();
                 sf::FloatRect projectileBounds = projectile.getBounds();
 
-                // Check for collision with each character (enemy)
+                // Iterator for character list
                 auto it = characters.getIterator();
                 bool projectileHit = false;
 
                 while (it != it.end()) {
                     Character* character = it.getCurrent()->getValue();
 
-                    // Check if character is still alive
+                    // Determine if character is an Undead or Juggernaut
                     Undead* undead = dynamic_cast<Undead*>(character);
+                    Juggernaut* juggernaut = dynamic_cast<Juggernaut*>(character);
+
+                    // Skip collision check for dead undead characters
                     if (undead && undead->getIsDead()) {
                         ++it;
-                        continue; // Skip collision check for dead characters
+                        continue;
                     }
 
                     sf::FloatRect characterBounds = character->getBounds();
 
-                    // If the projectile collides with the enemy
+                    // If the projectile collides with the character (Undead or Juggernaut)
                     if (projectileBounds.intersects(characterBounds)) {
                         character->takeDamage(20);
                         std::cout << "Projectile hit enemy! Dealt 20 damage." << std::endl;
                         std::cout << "Enemy HP: " << character->getCurrentHP() << std::endl;
 
-                        // Check if the enemy is now dead after taking damage
-                        if (character->getCurrentHP() <= 0) {
-                            undead = dynamic_cast<Undead*>(character);
-                            if (undead && undead->getIsDead()) {
-                                std::cout << "Enemy killed! Player gains 1 experience point." << std::endl;
-                                player.gainExperience(); // Increase the player's experience
-                            }
+                        // Check if the Undead is now dead after taking damage
+                        if (undead && undead->getCurrentHP() <= 0 && undead->getIsDead()) {
+                            std::cout << "Undead killed! Player gains 1 experience point." << std::endl;
+                            player.gainExperience(1); // Increase player's experience by 1
                         }
 
-                        // Remove the projectile after hitting the enemy
+                        // Check if the Juggernaut is now dead after taking damage
+                        if (juggernaut && juggernaut->getCurrentHP() <= 0) {
+                            std::cout << "Juggernaut killed! Player gains 10 experience points." << std::endl;
+                            player.gainExperience(10); // Increase player's experience by 10
+                        }
+
+                        // Remove the projectile after hitting an enemy
                         player.getProjectiles().dequeue();
                         projectileHit = true;
                         break;
@@ -279,8 +337,6 @@ void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& w
         }
     }
 }
-
-
 
 // Method to reset all NPC
 void Room::resetNPC() {

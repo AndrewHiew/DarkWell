@@ -9,11 +9,16 @@
 #include "Shovel.h"
 #include "Projectile.h"
 #include "ItemVisitor.h"
+#include "SkillTree.h"
 
 class Room;
+class SkillTree;
 
 class Player : public Character {
 private:
+    sf::Sprite playerSprite;  // Change to sf::Sprite for texture application
+    sf::Texture playerTexture; // Texture to hold the image
+
     sf::RectangleShape playerShape;
     float speed;
     float jumpHeight;
@@ -22,12 +27,16 @@ private:
     bool isGrounded;  // New boolean variable
     float velocityY;
     Inventory inventory;
+    SkillTree* skillTree;  // SkillTree instance for the Player
+    bool showSkillTree;
 
+    float projectileSpeed;
     int experience;
     int selectedItemIndex;
     float damageImmunityTimer; // Timer to track damage immunity
     bool isImmune; // Status to check if player is immune
     bool playerDead;
+    float damageReduction;
 
     // Projectile Queue
     Queue<Projectile> projectiles;
@@ -49,6 +58,18 @@ public:
     // Getter and setter
     bool getPlayerDead();
     void setPlayerDead(bool isDead);
+    void setJumpHeight(float newHeight);
+    float getJumpHeight();
+    void setSpeed(float newSpeed);
+    float getSpeed();
+    void setDamageReduction(float newDamageReduction);
+    void setProjectileSpeed(float newProjectileSpeed);
+    float getProjectileSpeed();
+
+    // Method to spend experience
+    void gainExperience(int aXp);
+    int getExperience();
+    void spendExperience(int points);
     Queue<Projectile>& getProjectiles();
 
     // Player-specific methods
@@ -56,7 +77,7 @@ public:
     void update(float deltaTime, Room& room, sf::RenderWindow& window);  // Update with room collision handling
     void drawInventoryOverlay(sf::RenderWindow& window);
     void draw(sf::RenderWindow& window);
-    void gainExperience();
+    int getSkillIndexFromMousePosition(int mouseX, int mouseY);
 
     // Position and movement-related methods
     sf::FloatRect getBounds() const;  // Get bounding box for collision
@@ -80,4 +101,5 @@ public:
     void updateProjectiles(float deltaTime);
     void drawProjectiles(sf::RenderWindow& window);
     void drawHealthBar(sf::RenderWindow& window);
+    void drawSkillTree(sf::RenderWindow& window);
 };

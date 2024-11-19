@@ -13,9 +13,11 @@ class LazerGun : public Item {
 public:
     LazerGun() {  // Initialize Queue with a max size of 5
         color = sf::Color(128, 0, 128);  // Purple for Lazer Gun
+        imagePath = "lazergun.png";
     }
 
     std::string getName() const override { return "Lazer Gun"; }
+    std::string getImagePath() { return imagePath; }
 
     // Use method with parameters for shooting projectiles
     void use(float playerX, float playerY, float angle, Player* player);

@@ -99,6 +99,9 @@
     <ClCompile Include="HealingObstacle.cpp">
       <Filter>Source Files\Obstacle</Filter>
     </ClCompile>
+    <ClCompile Include="SkillTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameEngine.h">
@@ -204,5 +207,34 @@
     <Image Include="mask.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="room-1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="lazergun.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="lifetotem.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="timewinder.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="brick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="player.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="scream.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="boss1.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="freebird.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

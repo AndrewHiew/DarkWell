@@ -12,7 +12,9 @@ public:
     int StartGame();
     
 private:
+    std::string currentMusic;
     sf::Music backgroundMusic;
+    sf::Music eventSoundEffect;
     List<Room*> rooms;
     bool gamePaused;
     void drawInventoryOverlay(
@@ -25,6 +27,9 @@ private:
     Room* initializeRoom3();  // Method to initialize Room 3
     Room* initializeRoom4();  // Method to initialize Room 4
     Room* initializeRoom5();  // Method to initialize Room 5
+    Room* initializeRoom6();  // Method to initialize Room 6
+    Room* initializeRoom7();  // Method to initialize Room 7
+    Room* initializeRoom8();  // Method to initialize Room 8
     void handleEvents(sf::RenderWindow& window);  // Method to handle window events
     void updateObstacles(Room* currentRoom, float deltaTime);  // Method to update obstacles
     void handleRoomTransitions(Player& player, Room*& currentRoom, List<Room*>& rooms, bool& isRespawning);  // Method for room transitions

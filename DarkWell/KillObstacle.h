@@ -13,4 +13,7 @@ public:
 
     // Check if player collides with the obstacle
     bool checkCollision(const sf::FloatRect& playerBounds) const;
+
+    float getWidth();
+    void setWidth(float aWidth);
 };

@@ -7,6 +7,7 @@ class ItemVisitor;
 class LifeTotem : public Item {
 public:
     LifeTotem() {
+        imagePath = "lifetotem.png";
         color = sf::Color(0, 128, 128);
     }
 

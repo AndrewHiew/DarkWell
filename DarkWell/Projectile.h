@@ -12,8 +12,8 @@ private:
 public:
     Projectile() : speed(500.0f) {}
 
-    Projectile(float startX, float startY, float angle)
-        : speed(500.0f) {
+    Projectile(float startX, float startY, float angle, float aSpeed) {
+        speed = aSpeed;
         shape.setSize(sf::Vector2f(5.0f, 5.0f)); // Size of the projectile
         shape.setFillColor(sf::Color::Red); // Color of the projectile
         shape.setPosition(startX, startY);
@@ -47,5 +47,13 @@ public:
     void destroy() {
         // Mark this projectile for destruction (e.g., set a flag or directly remove it from the queue)
         std::cout << "Projectile destroyed!" << std::endl;
+    }
+
+    void setProjectileSpeed(float newSpeed) {
+        speed = newSpeed;
+    }
+
+    float getProjectileSpeed() {
+        return speed;
     }
 };

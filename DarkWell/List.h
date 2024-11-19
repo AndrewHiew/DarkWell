@@ -174,6 +174,53 @@ public:
         return false; // Value not found
     }
 
+    // Erase an element by iterator
+    Iterator erase(Iterator it) {
+        if (it == end()) {
+            throw std::out_of_range("Iterator out of range");
+        }
+
+        Node* current = it.getCurrent();
+
+        // Case 1: It's the first element
+        if (current == first) {
+            first = first->getNext();
+            if (first != &(Node::NIL)) {
+                first->setPrevious(&(Node::NIL)); // Update the previous pointer of the new first node
+            }
+            else {
+                last = &(Node::NIL); // The list is now empty
+            }
+        }
+        // Case 2: It's the last element
+        else if (current == last) {
+            last = last->getPrevious();
+            if (last != &(Node::NIL)) {
+                last->setNext(&(Node::NIL)); // Update the next pointer of the new last node
+            }
+            else {
+                first = &(Node::NIL); // The list is now empty
+            }
+        }
+        // Case 3: It's a middle node
+        else {
+            Node* prevNode = current->getPrevious();
+            Node* nextNode = current->getNext();
+
+            prevNode->setNext(nextNode);
+            if (nextNode != &(Node::NIL)) {
+                nextNode->setPrevious(prevNode);
+            }
+        }
+
+        Iterator nextIterator(current->getNext());
+        delete current; // Safely delete the node
+        --count;
+
+        return nextIterator; // Return an iterator to the next node
+    }
+
+
 
     // Helper Functions
     bool isEmpty() const { return count == 0; }

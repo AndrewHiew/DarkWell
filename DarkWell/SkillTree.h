@@ -2,6 +2,9 @@
 #include "Tree.h"
 #include "SkillNode.h"
 #include "Player.h"
+#include <SFML/Graphics.hpp>  // For rendering
+
+class Player;
 
 class SkillTree {
 private:
@@ -14,5 +17,10 @@ public:
     // Method to unlock a skill
     void unlockSkill(NTree<SkillNode, 2>& skillNode);
     void displaySkillTree();
+
+    void drawSkillTree(sf::RenderWindow& window);  // For drawing the skill tree overlay
+    void handleSkillSelection(int skillIndex);
+    SkillNode getNode(int index);
+    SkillNode getChildNode(int parentIndex, int childIndex);
 };
 

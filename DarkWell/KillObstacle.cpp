@@ -15,3 +15,6 @@ void KillObstacle::draw(sf::RenderWindow& window) const {
 bool KillObstacle::checkCollision(const sf::FloatRect& playerBounds) const {
     return shape.getGlobalBounds().intersects(playerBounds);
 }
+
+float KillObstacle::getWidth() { return width; }
+void KillObstacle::setWidth(float aWidth) { width = aWidth; }

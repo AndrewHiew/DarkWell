@@ -142,6 +142,7 @@
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="SkillTree.cpp" />
     <ClCompile Include="Undead.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,7 +182,18 @@
     <Font Include="Arial.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="brick.png" />
+    <Image Include="lazergun.png" />
+    <Image Include="lifetotem.png" />
     <Image Include="mask.png" />
+    <Image Include="player.png" />
+    <Image Include="room-1.png" />
+    <Image Include="timewinder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="boss1.mp3" />
+    <Media Include="freebird.mp3" />
+    <Media Include="scream.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

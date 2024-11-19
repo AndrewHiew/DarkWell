@@ -4,6 +4,8 @@
 class Obstacle {
 protected:
     sf::RectangleShape shape;  // The shape representing the obstacle
+    float width;
+    float height;
 
 public:
     // Default constructor (needed by the linked list)

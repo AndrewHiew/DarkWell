@@ -5,7 +5,7 @@ template<class T, int N>
 class NTree
 {
 private:
-	const T* fKey;
+	T* fKey;
 	NTree<T, N>* fNodes[N];
 
 	NTree() : fKey((T*)0)
@@ -17,7 +17,13 @@ private:
 
 public:
 	static NTree<T, N> NIL;
-	NTree(const T& aKey) : fKey(&aKey)
+	NTree(T& aKey) : fKey(&aKey)
+	{
+		for (int i = 0; i < N; i++) {
+			fNodes[i] = &NIL;
+		}
+	}
+	NTree(const T& aKey) : fKey(new T(aKey))  // Create a copy of the SkillNode
 	{
 		for (int i = 0; i < N; i++) {
 			fNodes[i] = &NIL;
@@ -37,7 +43,7 @@ public:
 		return this == &NIL;
 	}
 
-	const T& getKey() const
+	T& getKey()
 	{
 		if (isEmpty()) {
 			throw std::domain_error("Empty NTree");

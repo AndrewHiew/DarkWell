@@ -2,12 +2,14 @@
 #include "Item.h"
 #include <iostream>
 
+
 class ItemVisitor;
 
 class Shovel : public Item {
 public:
     Shovel() {
         color = sf::Color(139, 69, 19);
+        imagePath = "lifetotem.png";
     }
 
     std::string getName() const override { return "Shovel"; }
