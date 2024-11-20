@@ -2,10 +2,18 @@
 
 // Constructor initializes health, color, and size
 Undead::Undead(int maxHP, float posX, float posY)
-    : Character(maxHP), speed(100.0f), isDead(false), gravity(1000.0f), velocityY(0.0f), isGrounded(false) {
+    : Character(maxHP), speed(80.0f), isDead(false), gravity(1000.0f), velocityY(0.0f), isGrounded(false) {
     undeadShape.setSize(sf::Vector2f(24, 32));  // Same size as the player
-    undeadShape.setFillColor(sf::Color::Yellow);  // Temporary color
     undeadShape.setPosition(posX, posY);  // Initial position for the Undead
+
+    // Load the player texture
+    if (!undeadTexture.loadFromFile("undead.png")) {
+        std::cerr << "Failed to load undead texture!" << std::endl;
+    }
+
+    // Apply the texture to the rectangle shape
+    undeadShape.setTexture(&undeadTexture);  // Apply the texture to the shape
+
     initX = posX;
     initY = posY;
 }

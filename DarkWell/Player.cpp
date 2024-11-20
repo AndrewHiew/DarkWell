@@ -19,12 +19,13 @@ Player::Player(int maxHP)
     isImmune(false),
     playerDead(false),
     projectiles(Queue<Projectile>(5)),
-    experience(100),
+    experience(5),
     projectileSpeed(500.0f),
     damageReduction(1.0f),
-    showSkillTree(false)
+    showSkillTree(false),
+    playerPositionHistory(new Stack<sf::Vector2f>())
 {
-    // Retaining the rectangle shape with size 24x32
+    // Retaining the rectangle shape with size 32x32 was 24x32
     playerShape.setSize(sf::Vector2f(24, 32));  // Shape size
     playerShape.setPosition(100, 300);          // Initial position
 
@@ -112,6 +113,17 @@ void Player::update(float deltaTime, Room& room, sf::RenderWindow& window) {
     if (!isGrounded) {
         velocityY += gravity * deltaTime;  // Apply gravity
     }
+
+    // Update the timer
+    positionUpdateTimer += deltaTime;
+
+    // Store position every 1 seconds
+    if (positionUpdateTimer >= 1.0f) {
+        playerPositionHistory->push(getPosition());
+        positionUpdateTimer = 0.0f; // Reset the timer
+    }
+
+    //printPositionHistory(); // FOR DEBUGGING
 
     // Move the player based on vertical velocity (gravity)
     playerShape.move(0, velocityY * deltaTime);
@@ -475,6 +487,12 @@ void Player::useSelectedItem() {
             delete V;
             V = nullptr;
         }
+        else if (TimeWinder* timeWinder = dynamic_cast<TimeWinder*>(selectedItem)){
+            V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle, this);
+            timeWinder->accept(*V);
+            delete V;
+            V = nullptr;
+        }
         else {
             // Fallback for other items if applicable
             V = new ItemVisitorUse(getPosition().x + 10, getPosition().y + 10, facingAngle, this);
@@ -561,3 +579,4 @@ float Player::getProjectileSpeed() { return projectileSpeed; }
 bool Player::getPlayerDead() { return playerDead; }
 void Player::setPlayerDead(bool isDead) { playerDead = isDead; }
 Queue<Projectile>& Player::getProjectiles() { return projectiles; }
+Stack<sf::Vector2f>* Player::getPlayerPositionHistory() { return playerPositionHistory; }

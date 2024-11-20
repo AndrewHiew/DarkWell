@@ -6,10 +6,11 @@
 #include "Room.h"
 #include "Inventory.h"
 #include "LazerGun.h"
-#include "Shovel.h"
+#include "TimeWinder.h"
 #include "Projectile.h"
 #include "ItemVisitor.h"
 #include "SkillTree.h"
+#include "Stack.h"
 
 class Room;
 class SkillTree;
@@ -29,6 +30,10 @@ private:
     Inventory inventory;
     SkillTree* skillTree;  // SkillTree instance for the Player
     bool showSkillTree;
+
+    // Stack to store player position history
+    Stack<sf::Vector2f>* playerPositionHistory;
+    float positionUpdateTimer;
 
     float projectileSpeed;
     int experience;
@@ -55,6 +60,16 @@ public:
     Player(int maxHP);
     ~Player();
 
+    // Debug method to print position history
+    void printPositionHistory() const {
+        if (playerPositionHistory != nullptr) {
+            for (int i = 0; i < playerPositionHistory->size(); ++i) {
+                sf::Vector2f pos = playerPositionHistory->back();
+                std::cout << "Position " << i << ": (" << pos.x << ", " << pos.y << ")\n";
+            }
+        }
+    }
+
     // Getter and setter
     bool getPlayerDead();
     void setPlayerDead(bool isDead);
@@ -65,6 +80,7 @@ public:
     void setDamageReduction(float newDamageReduction);
     void setProjectileSpeed(float newProjectileSpeed);
     float getProjectileSpeed();
+    Stack<sf::Vector2f>* getPlayerPositionHistory();
 
     // Method to spend experience
     void gainExperience(int aXp);

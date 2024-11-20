@@ -310,8 +310,8 @@ void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& w
 
                         // Check if the Undead is now dead after taking damage
                         if (undead && undead->getCurrentHP() <= 0 && undead->getIsDead()) {
-                            std::cout << "Undead killed! Player gains 1 experience point." << std::endl;
-                            player.gainExperience(1); // Increase player's experience by 1
+                            std::cout << "Undead killed! Player gains 3 experience point." << std::endl;
+                            player.gainExperience(3); // Increase player's experience by 3
                         }
 
                         // Check if the Juggernaut is now dead after taking damage

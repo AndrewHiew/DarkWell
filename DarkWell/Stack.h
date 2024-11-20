@@ -6,17 +6,12 @@ template<class T>
 class Stack {
 private:
     List<T> list;
-    int maxSize;
 
 public:
-    // Limit Stack size to 5
-    Stack(int maxSize = 5) : maxSize(maxSize) {}
+    Stack() {}
 
     // push a new item; popback if the max size is reached
     void push(const T& value) {
-        if (list.size() >= maxSize) {
-            throw std::out_of_range("Stack is full");
-        }
         list.pushBack(value);
     }
 

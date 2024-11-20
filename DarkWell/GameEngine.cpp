@@ -7,19 +7,20 @@
 #include <iostream>
 #include "List.h"
 #include "LazerGun.h"
-#include "Shovel.h"
+#include "TimeWinder.h"
 #include "ItemObstacle.h"
 #include "Juggernaut.h"
 #include "HealingObstacle.h"
 
 // Default constructor
-GameEngine::GameEngine() : gamePaused(false) {}  // Initialize gamePaused flag
+GameEngine::GameEngine() : gamePaused(false), currentMusic("lacrimosa") {}  // Initialize gamePaused flag
 
 // Destructor
 GameEngine::~GameEngine() { cleanUp(); }
 
 // Main method to start the game
 int GameEngine::StartGame() {
+    bool iswin = false;
     sf::RenderWindow window(sf::VideoMode(640, 360), "DarkWell");
     window.setFramerateLimit(60);
 
@@ -27,8 +28,9 @@ int GameEngine::StartGame() {
     player.setPosition(50, 318);  // Initial position in Room 1
 
     // Add items to player's inventory`
-    player.addItemToInventory(new LazerGun());
-    //player.addItemToInventory(new Shovel());
+    //player.addItemToInventory(new LazerGun());
+    //player.addItemToInventory(new LifeTotem());
+    //player.addItemToInventory(new TimeWinder());
 
     // Load and start playing background music
     if (!backgroundMusic.openFromFile("lacrimosa.mp3")) {
@@ -49,7 +51,7 @@ int GameEngine::StartGame() {
     rooms.pushBack(initializeRoom6());
     rooms.pushBack(initializeRoom7());
     rooms.pushBack(initializeRoom8());
-    Room* currentRoom = rooms[3];  // Start in Room 1
+    Room* currentRoom = rooms[0];  // Start in Room 1
 
     sf::Clock clock;  // For deltaTime calculations
 
@@ -61,6 +63,11 @@ int GameEngine::StartGame() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
+            }
+            // Wait for Enter key to restart
+            if (iswin && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                window.close();
+                return -1;
             }
 
             // Check for respawn if player is dead
@@ -119,12 +126,15 @@ int GameEngine::StartGame() {
         }
 
         window.clear(sf::Color::Black);
-        spawnNPC(currentRoom);
+        spawnNPC(currentRoom, deltaTime);
         currentRoom->draw(window);
         currentRoom->update(deltaTime, player, window);
         cout << currentRoom->getName() << endl;
 
         player.update(deltaTime, *currentRoom, window);
+        currentRoom->updateProjectile(deltaTime, player, window); // Method to update Projectile
+
+
 
         // Game Event 1
         if (!player.getInventory().isEmpty()) {
@@ -133,20 +143,21 @@ int GameEngine::StartGame() {
                 if (lg && !rooms[1]->areNPCsSpawned()) {
                     rooms[0]->setTempStatus(true);
                     rooms[0]->addObstacle(new HealingObstacle(40, 220, 10, 10));
-                    currentRoom->getCharacters().pushBack(new Undead(100, 80, 80));
-                    currentRoom->getCharacters().pushBack(new Undead(100, 200, 80));
+                    rooms[1]->getCharacters().pushBack(new Undead(100, 80, 80));
+                    rooms[1]->getCharacters().pushBack(new Undead(100, 200, 80));
 
                     if (!eventSoundEffect.openFromFile("scream.mp3")) {
                         std::cerr << "Failed to load scream.mp3!" << std::endl;
-                        return -1;  
+                        return -1;
                     }
                     eventSoundEffect.setVolume(30);
                     eventSoundEffect.play();
 
-                    currentRoom->setNPCsSpawned(true);
+                    rooms[1]->setNPCsSpawned(true);
                 }
             }
         }
+
         // Game Event 2
         if (currentRoom == rooms[2]) {
             if (!rooms[2]->areNPCsSpawned()) {
@@ -208,7 +219,7 @@ int GameEngine::StartGame() {
 
         // If the All Enemies Dies, play lacrimosa
         if (currentRoom == rooms[4] && currentMusic == "freebird") {
-            if (rooms[3]->getCharacters().isEmpty()) {
+            if (rooms[4]->getCharacters().isEmpty()) {
                 if (!backgroundMusic.openFromFile("lacrimosa.mp3")) {
                     std::cerr << "Failed to load lacrimosa.mp3!" << std::endl;
                     return -1;  // Exit if music fails to load
@@ -218,20 +229,11 @@ int GameEngine::StartGame() {
                 backgroundMusic.play();
 
                 currentMusic = "lacrimosa";  // Reset the flag when leaving the room
-            }
-        }
 
-        // If player leaves the room, reset the music flag
-        if (currentRoom != rooms[4] && currentMusic == "freebird") {
-            if (!backgroundMusic.openFromFile("lacrimosa.mp3")) {
-                std::cerr << "Failed to load lacrimosa.mp3!" << std::endl;
-                return -1;  // Exit if music fails to load
+                rooms[4]->setTempStatus(true);
+                rooms[4]->addObstacle(new MovingObstacle(300, 300, 80, 20, 100.0f, 50.0f, 300.0f));
+                rooms[4]->addObstacle(new HealingObstacle(300, 100, 10, 10));
             }
-            backgroundMusic.setLoop(true);    // Enable looping
-            backgroundMusic.setVolume(30);    // Set volume (adjust as needed)
-            backgroundMusic.play();
-
-            currentMusic = "lacrimosa";  // Reset the flag when leaving the room
         }
 
 
@@ -252,7 +254,7 @@ int GameEngine::StartGame() {
 
         // If the Boss Dies, play lacrimosa
         if (currentRoom == rooms[7] && currentMusic == "boss1") {
-            if (rooms[3]->getCharacters().isEmpty()) {
+            if (rooms[7]->getCharacters().isEmpty()) {
                 if (!backgroundMusic.openFromFile("lacrimosa.mp3")) {
                     std::cerr << "Failed to load lacrimosa.mp3!" << std::endl;
                     return -1;  // Exit if music fails to load
@@ -262,6 +264,7 @@ int GameEngine::StartGame() {
                 backgroundMusic.play();
 
                 currentMusic = "lacrimosa";  // Reset the flag when leaving the room
+                iswin = true;
             }
         }
 
@@ -278,15 +281,71 @@ int GameEngine::StartGame() {
             currentMusic = "lacrimosa";  // Reset the flag when leaving the room
         }
 
-        currentRoom->updateProjectile(deltaTime, player, window); // Method to update Projectile
+
+        if (iswin) {
+            // Pause the game and show respawn dialog
+            sf::Text winText;
+            sf::Font font;
+            if (!font.loadFromFile("arial.ttf")) {
+                std::cerr << "Failed to load font!" << std::endl;
+            }
+            winText.setFont(font);
+            winText.setString("You escaped! Press Enter to close.");
+            winText.setCharacterSize(24);
+            winText.setFillColor(sf::Color::Green);
+            winText.setPosition(150, 150);
+
+            window.clear(sf::Color::Black);
+            window.draw(winText);
+            window.display();
+            continue;  // Skip the rest of the update and render when player is dead
+        }
+
         window.display();
     }
 
     return 0;
 }
 
+// Method to call when the player beats the boss
+void GameEngine::win(Player player, sf::RenderWindow& window) {
+    // Display the win message using the existing window
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Failed to load font!" << std::endl;
+    }
+
+    sf::Text winText;
+    winText.setFont(font);
+    winText.setString("You escaped! Press Enter to close.");
+    winText.setCharacterSize(30);
+    winText.setFillColor(sf::Color::Green);
+    winText.setPosition(150, 150);
+
+    // Pause the game and display the win message
+    gamePaused = true;  // Pause the game so the player can't movegame engine
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            // Wait for Enter key to restart
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                window.close();
+            }
+        }
+
+        window.clear(sf::Color::Black);
+        window.draw(winText);
+        window.display();
+    }
+}
+
 // Method to spawn NPCs
-void GameEngine::spawnNPC(Room* currentRoom) {
+void GameEngine::spawnNPC(Room* currentRoom,float deltaTime) {
     // Check if NPCs are already spawned
     if (currentRoom->getName() == "Room 2" && !currentRoom->areNPCsSpawned()) {
         //Undead* undead1 = new Undead(100, 500, 200);
@@ -296,19 +355,55 @@ void GameEngine::spawnNPC(Room* currentRoom) {
         //currentRoom->setNPCsSpawned(true);
     }
 
+    static float room4SpawnTimer = 0.0f;
+
+    if (currentRoom->getName() == "Room 4") {
+        // Increment the timer by deltaTime
+        room4SpawnTimer += deltaTime;
+
+        // Check if 10 seconds have passed
+        if (room4SpawnTimer >= 5.0f) {
+            // Spawn an undead character
+            currentRoom->getCharacters().pushBack(new Undead(100, 400, 20));
+
+            // Reset the timer
+            room4SpawnTimer = 0.0f;
+        }
+    }
+    else {
+        // Reset the timer if the player leaves Room 4
+        room4SpawnTimer = 0.0f;
+    }
+    if (currentRoom->getName() == "Room 1" && !currentRoom->areNPCsSpawned()) {
+        currentRoom->getCharacters().pushBack(new Undead(100, 550, 100));
+
+        // Set the flag to indicate NPCs have been spawned
+        currentRoom->setNPCsSpawned(true);
+    }
+
     if (currentRoom->getName() == "Room 5" && !currentRoom->areNPCsSpawned()) {
-        Undead* undead1 = new Undead(100, 500, 200);
-        currentRoom->getCharacters().pushBack(undead1);
+
+        currentRoom->getCharacters().pushBack(new Undead(100, 400, 250));
+        currentRoom->getCharacters().pushBack(new Undead(100, 450, 200));
+        currentRoom->getCharacters().pushBack(new Undead(100, 500, 150));
+        currentRoom->getCharacters().pushBack(new Undead(100, 550, 100));
 
         // Set the flag to indicate NPCs have been spawned
         currentRoom->setNPCsSpawned(true);
-        /*
-        Juggernaut* boss = new Juggernaut(500, 500, 200);
-        currentRoom->getCharacters().pushBack(boss);
+    }
+
+    if (currentRoom->getName() == "Room 6" && !currentRoom->areNPCsSpawned()) {
+        currentRoom->getCharacters().pushBack(new Undead(100, 540, 320));
 
         // Set the flag to indicate NPCs have been spawned
         currentRoom->setNPCsSpawned(true);
-        */
+    }
+
+    if (currentRoom->getName() == "Room 8" && !currentRoom->areNPCsSpawned()) {
+        currentRoom->getCharacters().pushBack(new Juggernaut(800, 550, 200));
+
+        // Set the flag to indicate NPCs have been spawned
+        currentRoom->setNPCsSpawned(true);
     }
 }
 
@@ -418,14 +513,17 @@ Room* GameEngine::initializeRoom3() {
 Room* GameEngine::initializeRoom4() {
     Room* room4 = new Room("Room 4");
     room4->addObstacle(new NormalObstacle(0, 350, 640, 10));  // Floor obstacle
-    room4->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Celling obstacle
     room4->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Celling obstacle
-    room4->addObstacle(new NormalObstacle(630, 0, 10, 300));  // Right Wall
+    room4->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Left Wall
+    room4->addObstacle(new NormalObstacle(630, 0, 10, 240));  // Right Wall
+    room4->addObstacle(new NormalObstacle(630, 300, 10, 60));  // Right Wall
 
     room4->addObstacle(new NormalObstacle(340, 10, 10, 100)); 
     room4->addObstacle(new NormalObstacle(60, 100, 280, 10));
     room4->addObstacle(new NormalObstacle(0, 180, 540, 10));
-    room4->addObstacle(new NormalObstacle(60, 290, 600, 10));
+    room4->addObstacle(new NormalObstacle(60, 290, 500, 10)); // First Floor Obstacle
+    room4->addObstacle(new NormalObstacle(550, 240, 10, 50)); // First Floor Obstacle
+    room4->addObstacle(new NormalObstacle(550, 230, 80, 10)); // First Floor Obstacle
 
     room4->addObstacle(new KillObstacle(0, 0, 20, 360));  // Left Kill Wall
     room4->addObstacle(new KillObstacle(460, 120, 20, 60));
@@ -441,6 +539,11 @@ Room* GameEngine::initializeRoom5() {
     Room* room5 = new Room("Room 5");
 
     room5->addObstacle(new NormalObstacle(0, 350, 640, 10));  // Floor obstacle
+    room5->addObstacle(new NormalObstacle(0, 0, 10, 240));  // Left Wall
+    room5->addObstacle(new NormalObstacle(0, 300, 10, 60));  // Left Wall
+    room5->addObstacle(new NormalObstacle(630, 0, 10, 360));  // Right Wall
+
+    room5->addTempObstacle(new NormalObstacle(0, 240, 10, 60, sf::Color::Green));
 
     room5->addObstacle(new NormalObstacle(0, 0, 300, 10));  // Celling obstacle
     room5->addObstacle(new NormalObstacle(340, 0, 300, 10));  // Celling obstacle
@@ -448,18 +551,47 @@ Room* GameEngine::initializeRoom5() {
 }
 
 Room* GameEngine::initializeRoom6() {
-    Room* room5 = new Room("Room 6");
-    return room5;
+    Room* room6 = new Room("Room 6");
+
+    room6->addObstacle(new NormalObstacle(0, 350, 300, 10));  // Floor obstacle
+    room6->addObstacle(new NormalObstacle(340, 350, 300, 10));  // Floor obstacle
+    room6->addObstacle(new NormalObstacle(0, 0, 640, 10));  // Celling obstacle
+    room6->addObstacle(new NormalObstacle(0, 60, 10, 300));  // Right Wall
+    room6->addObstacle(new NormalObstacle(630, 0, 10, 360));  // Left Wall
+
+    room6->addObstacle(new NormalObstacle(0, 60, 100, 10)); // Top Left obstacle
+    room6->addObstacle(new NormalObstacle(100, 160, 100, 10)); // middle obstacle
+    room6->addObstacle(new NormalObstacle(200, 260, 100, 10)); // Top Left obstacle
+
+    room6->addObstacle(new ItemObstacle(124, 130, new TimeWinder()));
+
+    return room6;
 }
 
 Room* GameEngine::initializeRoom7() {
-    Room* room5 = new Room("Room 7");
-    return room5;
+    Room* room7 = new Room("Room 7");
+
+    room7->addObstacle(new NormalObstacle(0, 0, 10, 360));  // Left Wall
+    room7->addObstacle(new NormalObstacle(630, 60, 10, 300));  // Right Wall
+    room7->addObstacle(new NormalObstacle(0, 350, 560, 10));  // Floor obstacle
+    room7->addObstacle(new NormalObstacle(0, 0, 640, 10));  // Celling obstacle
+
+    room7->addObstacle(new NormalObstacle(500, 60, 100, 10)); // Top Left obstacle
+    room7->addObstacle(new NormalObstacle(400, 160, 100, 10)); // middle obstacle
+    room7->addObstacle(new NormalObstacle(300, 260, 100, 10)); // Top Left obstacle
+
+    return room7;
 }
 
 Room* GameEngine::initializeRoom8() {
-    Room* room5 = new Room("Room 8");
-    return room5;
+    Room* room8 = new Room("Room 8");
+
+    room8->addObstacle(new NormalObstacle(0, 350, 640, 10));  // Floor obstacle
+    room8->addObstacle(new NormalObstacle(0, 0, 640, 10));  // Celling obstacle
+    room8->addObstacle(new NormalObstacle(0, 60, 10, 300));  // Left Wall
+    room8->addObstacle(new NormalObstacle(630, 0, 10, 360));  // Right Wall
+
+    return room8;
 }
 
 void GameEngine::handleEvents(sf::RenderWindow& window) {
@@ -539,12 +671,12 @@ void GameEngine::handleRoomTransitions(Player& player, Room*& currentRoom, List<
         if (playerBounds.top < 0) {  // Up to Room 3
             player.setPosition(player.getPosition().x, 360 - playerBounds.height);
             currentRoom = rooms[2];
-            respawnNPC();
+            rooms[3]->getCharacters().clear();
         }
         else if (playerBounds.left + playerBounds.width > 640) {  // Right to Room 5
             player.setPosition(0, player.getPosition().y);
             currentRoom = rooms[4];
-            respawnNPC();
+            rooms[3]->getCharacters().clear();
         }
     }
     // Room 5 transitions

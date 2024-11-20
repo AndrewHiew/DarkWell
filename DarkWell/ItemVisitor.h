@@ -8,7 +8,7 @@ using namespace std;
 // Define all available Items
 class Item;
 class LazerGun;
-class Shovel;
+class TimeWinder;
 class LifeTotem;
 class Player;
 
@@ -17,7 +17,7 @@ class ItemVisitor
 public:
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
-	virtual void Visit(Shovel& shovel);
+	virtual void Visit(TimeWinder& aTimeWinder);
 	virtual void Visit(LifeTotem& aLifeTotem);
 };
 
@@ -33,7 +33,7 @@ public:
 	ItemVisitorUse(float pX, float pY, float pAngle, Player* aPlayer);
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
-	virtual void Visit(Shovel& shovel);
+	virtual void Visit(TimeWinder& aTimeWinder);
 	virtual void Visit(LifeTotem& aLifeTotem);
 };
 
@@ -42,6 +42,6 @@ class ItemVisitorPrint
 public:
 	virtual void Visit(Item& item);
 	virtual void Visit(LazerGun& lazerGun);
-	virtual void Visit(Shovel& shovel);
+	virtual void Visit(TimeWinder& aTimeWinder);
 	virtual void Visit(LifeTotem& aLifeTotem);
 };

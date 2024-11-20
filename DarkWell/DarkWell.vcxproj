@@ -143,6 +143,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="SkillTree.cpp" />
+    <ClCompile Include="TimeWinder.cpp" />
     <ClCompile Include="Undead.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,7 +171,7 @@
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="Room.h" />
-    <ClInclude Include="Shovel.h" />
+    <ClInclude Include="TimeWinder.h" />
     <ClInclude Include="SinglyLinkedList.h" />
     <ClInclude Include="SkillNode.h" />
     <ClInclude Include="SkillTree.h" />
@@ -182,6 +183,7 @@
     <Font Include="Arial.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="boss.png" />
     <Image Include="brick.png" />
     <Image Include="lazergun.png" />
     <Image Include="lifetotem.png" />
@@ -189,9 +191,11 @@
     <Image Include="player.png" />
     <Image Include="room-1.png" />
     <Image Include="timewinder.png" />
+    <Image Include="undead.png" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="boss1.mp3" />
+    <Media Include="chariot.mp3" />
     <Media Include="freebird.mp3" />
     <Media Include="scream.mp3" />
   </ItemGroup>

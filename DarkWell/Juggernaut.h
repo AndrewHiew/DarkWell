@@ -19,6 +19,8 @@ private:
     bool isGrounded;   // To check if the Undead is grounded
     float initX;
     float initY;
+    sf::Sprite juggernautSprite;  // Change to sf::Sprite for texture application
+    sf::Texture juggernautTexture; // Texture to hold the image
 
 public:
     // Constructor with default health value

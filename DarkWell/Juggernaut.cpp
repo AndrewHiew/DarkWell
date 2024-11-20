@@ -3,11 +3,18 @@
 // Constructor initializes health, color, and size
 Juggernaut::Juggernaut(int maxHP, float posX, float posY)
     : Character(maxHP), speed(100.0f), isDead(false), gravity(1000.0f), velocityY(0.0f), isGrounded(false) {
-    juggernautShape.setSize(sf::Vector2f(24, 32));
-    juggernautShape.setFillColor(sf::Color(255, 69, 0));  // Temporary color (Orange)
+    juggernautShape.setSize(sf::Vector2f(70, 70));
     juggernautShape.setPosition(posX, posY);  // Initial position for the Undead
     initX = posX;
     initY = posY;
+
+    // Load the player texture
+    if (!juggernautTexture.loadFromFile("boss.png")) {
+        std::cerr << "Failed to load boss texture!" << std::endl;
+    }
+
+    // Apply the texture to the rectangle shape
+    juggernautShape.setTexture(&juggernautTexture);  // Apply the texture to the shape
 }
 
 // Get current position of the Undead

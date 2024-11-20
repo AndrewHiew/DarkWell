@@ -20,7 +20,5 @@ public:
 
     void drawSkillTree(sf::RenderWindow& window);  // For drawing the skill tree overlay
     void handleSkillSelection(int skillIndex);
-    SkillNode getNode(int index);
-    SkillNode getChildNode(int parentIndex, int childIndex);
 };
 
