@@ -8,7 +8,7 @@ class Player;
 
 class SkillTree {
 private:
-    NTree<SkillNode, 2> root; // Binary skill tree (can expand to more branches if needed)
+    NTree<SkillNode, 2> root; // NTree with 2 nodes, a Binary tree in this case
     Player& player; // Reference to player
 
 public:

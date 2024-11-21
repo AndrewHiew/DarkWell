@@ -62,11 +62,9 @@ public:
 
     // Debug method to print position history
     void printPositionHistory() const {
-        if (playerPositionHistory != nullptr) {
-            for (int i = 0; i < playerPositionHistory->size(); ++i) {
-                sf::Vector2f pos = playerPositionHistory->back();
-                std::cout << "Position " << i << ": (" << pos.x << ", " << pos.y << ")\n";
-            }
+        if (playerPositionHistory != nullptr && !playerPositionHistory->isEmpty()) { 
+            sf::Vector2f pos = playerPositionHistory->top();
+            std::cout << "Top Position in Stack:  (" << pos.x << ", " << pos.y << ")  Stack Size: " << playerPositionHistory->size() << std::endl;
         }
     }
 

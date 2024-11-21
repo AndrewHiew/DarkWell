@@ -27,7 +27,7 @@ int GameEngine::StartGame() {
     Player player(60);
     player.setPosition(50, 318);  // Initial position in Room 1
 
-    // Add items to player's inventory`
+    // Add items to player's inventory
     //player.addItemToInventory(new LazerGun());
     //player.addItemToInventory(new LifeTotem());
     //player.addItemToInventory(new TimeWinder());
@@ -129,7 +129,7 @@ int GameEngine::StartGame() {
         spawnNPC(currentRoom, deltaTime);
         currentRoom->draw(window);
         currentRoom->update(deltaTime, player, window);
-        cout << currentRoom->getName() << endl;
+        //cout << currentRoom->getName() << endl;
 
         player.update(deltaTime, *currentRoom, window);
         currentRoom->updateProjectile(deltaTime, player, window); // Method to update Projectile

@@ -278,7 +278,7 @@ void Room::updateProjectile(float deltaTime, Player& player, sf::RenderWindow& w
             auto& characters = getCharacters();
             int projectileCount = player.getProjectiles().size();
 
-            // Iterate over projectiles
+            // Iterate over projectilesD
             for (int i = 0; i < projectileCount; ++i) {
                 Projectile& projectile = player.getProjectiles().front();
                 sf::FloatRect projectileBounds = projectile.getBounds();

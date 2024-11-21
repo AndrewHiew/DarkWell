@@ -8,14 +8,12 @@ void TimeWinder::use(Player* player) {
     }
     else {
         // Get the 5th position (index 4)
-        sf::Vector2f position = player->getPlayerPositionHistory()->back(); // Get the last element
+        // sf::Vector2f position = player->getPlayerPositionHistory()->top(); // Get the last element
 
         // Pop the topmost (most recent) position and get the 5th one by accessing previous ones
         for (int i = 0; i < 4; ++i) {  // Pop off the last 4 positions
-            player->getPlayerPositionHistory()->pop();
+            sf::Vector2f position = player->getPlayerPositionHistory()->pop();
+            player->setPosition(position.x, position.y);
         }
-
-        // Set the player's position to the 5th position
-        player->setPosition(position.x, position.y);
     }
 }

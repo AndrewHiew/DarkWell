@@ -10,12 +10,12 @@ private:
 public:
     Stack() {}
 
-    // push a new item; popback if the max size is reached
+    // Push a new item onto the stack
     void push(const T& value) {
         list.pushBack(value);
     }
 
-    // pop the first item
+    // Remove and return the top item from the stack
     T pop() {
         if (isEmpty()) {
             throw std::out_of_range("Stack is empty");
@@ -23,29 +23,44 @@ public:
         return list.popBack();
     }
 
-    // Peek the front item without removing it
-    T& front() {
+    // Peek at the bottom item without removing it
+    T& bottom() {
         if (isEmpty()) {
             throw std::out_of_range("Stack is empty");
         }
         return list[0];
     }
 
-    // Peek the back item without removing it
-    T& back() {
+    // Peek at the top item without removing it
+    T& top() {
         if (isEmpty()) {
             throw std::out_of_range("Stack is empty");
         }
         return list[list.size() - 1];
     }
 
-    // Check if the Stack is empty
+    // Peek at the top item without removing it (const version)
+    const T& top() const {
+        if (isEmpty()) {
+            throw std::out_of_range("Stack is empty");
+        }
+        return list[list.size() - 1];
+    }
+
+    // Check if the stack is empty
     bool isEmpty() const {
         return list.isEmpty();
     }
 
-    // Get the current size of the Stack
+    // Get the current size of the stack
     int size() const {
         return list.size();
+    }
+
+    // Clear the stack
+    void clear() {
+        while (!isEmpty()) {
+            pop();
+        }
     }
 };

@@ -122,8 +122,8 @@ void Player::update(float deltaTime, Room& room, sf::RenderWindow& window) {
         playerPositionHistory->push(getPosition());
         positionUpdateTimer = 0.0f; // Reset the timer
     }
+    //printPositionHistory();
 
-    //printPositionHistory(); // FOR DEBUGGING
 
     // Move the player based on vertical velocity (gravity)
     playerShape.move(0, velocityY * deltaTime);

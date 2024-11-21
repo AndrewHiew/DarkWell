@@ -129,7 +129,6 @@
   <ItemGroup>
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="GameEngine.cpp" />
-    <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="HealingObstacle.cpp" />
     <ClCompile Include="ItemObstacle.cpp" />
     <ClCompile Include="ItemVisitor.cpp" />
@@ -151,7 +150,6 @@
     <ClInclude Include="DoublyLinkedNode.h" />
     <ClInclude Include="DoublyLinkedNodeIterator.h" />
     <ClInclude Include="GameEngine.h" />
-    <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="HealingObstacle.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />

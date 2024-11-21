@@ -43,12 +43,6 @@ public:
         return getBounds().intersects(projectile.getBounds());
     }
 
-    // Method to destroy the projectile
-    void destroy() {
-        // Mark this projectile for destruction (e.g., set a flag or directly remove it from the queue)
-        std::cout << "Projectile destroyed!" << std::endl;
-    }
-
     void setProjectileSpeed(float newSpeed) {
         speed = newSpeed;
     }
